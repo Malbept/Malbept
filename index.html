@@ -1,34 +1,94 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Потужно!</title>
+  <title>PotuzhnoMeter</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <div class="container">
-    <h1 class="title">Потужність</h1>
+    <header>
+      <div class="flag">🇺🇦</div>
+      <h1 class="title">ПОТУЖНОМЕТР</h1>
+      <p class="subtitle">ГМ-2025</p>
+    </header>
 
-    <div class="power-meter">
-      <div class="power-fill" id="powerFill"></div>
+    <div class="player-name">
+      <label>Your name: </label>
+      <input type="text" id="playerNameInput" value="" />
+      <button onclick="updatePlayerName()">Save</button>
     </div>
 
-    <button class="skull-btn" id="skullBtn">
-      <img src="assets/skull.svg" alt="Череп"/>
-    </button>
+    <div class="power-section">
+      <div class="emoji">😊</div>
+      <div class="power-meter">
+        <div class="power-fill" id="powerFill"></div>
+      </div>
+      <div class="power-percent" id="powerPercent">50%</div>
+      <button class="skull-btn" onclick="openPowerWindow()">
+        <img src="assets/skull.png" alt="Skull" />
+      </button>
+    </div>
 
-    <div class="power-value" id="powerValue">0</div>
+    <div class="game-section">
+      <div class="score">PARTICIPATION: <span id="score">0</span></div>
+      <button class="multiplier" id="multiplierBtn">x1.0</button>
+      <button class="tap-btn" id="tapBtn">ПТЫК</button>
+      <p class="credits">MADE IN ВОДЄМ</p>
+    </div>
 
     <div class="menu">
-      <button onclick="showSection('store')">Магазин</button>
-      <button onclick="showSection('rating')">Рейтинг</button>
+      <button onclick="showSection('store')">Store</button>
+      <button onclick="showSection('rating')">Rating</button>
       <button onclick="showSection('pvp')">PvP</button>
     </div>
 
-    <div class="section" id="storeSection" style="display:none;">Магазин скоро</div>
-    <div class="section" id="ratingSection" style="display:none;">Рейтинг скоро</div>
-    <div class="section" id="pvpSection" style="display:none;">PvP скоро</div>
+    <div class="section" id="storeSection" style="display:none;">
+      <h2>Store</h2>
+      <div class="shop-category">
+        <h3>Multiplier</h3>
+        <div class="shop-item">
+          <img src="assets/multiplier.png" alt="Multiplier" />
+          <div>
+            <p>Increase multiplier (+0.5)</p>
+            <p>Price: <span id="multiplierPrice">100</span> points</p>
+            <button onclick="buyMultiplier()">Buy</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3>Autoclickers</h3>
+        <div class="shop-item">
+          <img src="assets/autoclicker.png" alt="Autoclicker" />
+          <div>
+            <p>Autoclicker (+1/sec)</p>
+            <p>Price: <span id="autoclickerPrice">200</span> points</p>
+            <button onclick="buyAutoClicker()">Buy</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3>Offline Profit</h3>
+        <div class="shop-item">
+          <img src="assets/offline.png" alt="Offline Profit" />
+          <div>
+            <p>Offline profit (+10/hour)</p>
+            <p>Price: <span id="offlinePrice">500</span> points</p>
+            <button onclick="buyOfflineProfit()">Buy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section" id="ratingSection" style="display:none;">
+      <h2>Rating</h2>
+      <ul id="leaderboard"></ul>
+    </div>
+    <div class="section" id="pvpSection" style="display:none;">
+      <h2>PvP</h2>
+      <p>PvP in development</p>
+    </div>
   </div>
 
   <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
@@ -37,5 +97,14 @@
   <script src="data.js"></script>
   <script src="api.js"></script>
   <script src="game.js"></script>
+  <script>
+    // Initialize Telegram Mini App
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    // Set initial player name
+    document.getElementById("playerNameInput").value = window.gameState.playerName || tg.initDataUnsafe.user?.first_name || "Player";
+  </script>
 </body>
 </html>
