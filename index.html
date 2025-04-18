@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Потужнометр</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom, #0a0f2c, #141d47);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: #111944;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      text-align: center;
+      width: 320px;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .bar-container {
+      background: #1c245f;
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .bar {
+      flex-grow: 1;
+      margin: 0 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .bar div {
+      background: #3b4c9c;
+      width: 6px;
+      height: 20px;
+      border-radius: 3px;
+      margin: 2px;
+    }
+
+    .output {
+      font-size: 48px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #00ccff;
+    }
+
+    .sensitivity {
+      font-size: 14px;
+      margin-top: 5px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">Потужнометр</div>
+    <div class="bar-container">
+      <div>😵</div>
+      <div class="bar">
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+        <div></div><div></div><div></div><div></div><div></div>
+      </div>
+      <div>☠️</div>
+    </div>
+    <div class="output" id="output">0</div>
+    <div class="sensitivity">Чутливість ×1.0</div>
+  </div>
+
+  <script>
+    // Пример увеличения значений
+    let output = document.getElementById('output');
+    let value = 0;
+    setInterval(() => {
+      value = Math.min(value + Math.floor(Math.random() * 5), 999);
+      output.textContent = value;
+    }, 500);
+  </script>
+</body>
+</html>
