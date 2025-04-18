@@ -1,146 +1,135 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Потужнометр</title>
   <style>
-    body {
+    html, body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0a0f2c, #240046);
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 0;
+      background: linear-gradient(180deg, #0057b7, #ffd700);
+      font-family: sans-serif;
       overflow: hidden;
     }
 
     .container {
-      background: rgba(30, 20, 60, 0.9);
-      border: 2px solid #6a00ff;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90vw;
+      max-width: 400px;
+      height: 70vh;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid #fff;
       border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 0 25px #6a00ff88, 0 0 10px #00ccff44;
-      text-align: center;
-      width: 340px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px;
     }
 
     .title {
-      font-size: 30px;
+      font-size: 2rem;
       font-weight: bold;
-      margin-bottom: 20px;
-      color: #a8b6ff;
-      text-shadow: 0 0 5px #6a00ff;
+      color: #fff;
+      text-shadow: 1px 1px 4px #000;
     }
 
-    .bar-container {
-      background: #1e1b4b;
-      border-radius: 10px;
-      padding: 12px;
+    .meter-container {
+      width: 80%;
+      height: 30px;
+      background: #222;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: inset 0 0 10px #000;
+    }
+
+    .meter-bar {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ffd700, #ffeb3b);
+      transition: width 0.3s;
+    }
+
+    .skull {
+      width: 100px;
+      height: 100px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/9/99/Skull_icon.svg') center/contain no-repeat;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .skull:active {
+      transform: scale(0.95);
+    }
+
+    .nav {
+      width: 100%;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 25px;
-      box-shadow: inset 0 0 10px #00000088;
-    }
-
-    .bar {
-      flex-grow: 1;
-      margin: 0 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .bar div {
-      background: #6a00ff;
-      width: 6px;
-      height: 20px;
-      border-radius: 3px;
-      margin: 2px;
-      box-shadow: 0 0 5px #6a00ffcc;
-      transition: background 0.2s;
-    }
-
-    .output {
-      font-size: 52px;
-      font-weight: bold;
+      justify-content: space-around;
       margin-top: 10px;
-      color: #00ccff;
-      text-shadow: 0 0 10px #00ccff;
     }
 
-    .sensitivity {
-      font-size: 14px;
-      margin-top: 5px;
-      color: #bbb;
+    .nav button {
+      background: rgba(0,0,0,0.2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
     }
 
-    .footer {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #555;
+    .nav button:hover {
+      background: rgba(255,255,255,0.2);
     }
+
   </style>
 </head>
 <body>
   <div class="container">
     <div class="title">Потужнометр</div>
-    <div class="bar-container">
-      <div>😵</div>
-      <div class="bar" id="bar">
-        <!-- 20 полосок -->
-        <div></div><div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div><div></div>
-      </div>
-      <div>☠️</div>
+    <div class="skull" id="skull"></div>
+    <div class="meter-container">
+      <div class="meter-bar" id="meter-bar"></div>
     </div>
-    <div class="output" id="output">0</div>
-    <div class="sensitivity">Чутливість ×1.0</div>
-    <div class="footer">Натисни гучність + для старту</div>
+    <div class="nav">
+      <button>Ігри</button>
+      <button>Ще щось</button>
+      <button>Про нас</button>
+    </div>
   </div>
 
   <script>
-    let output = document.getElementById('output');
-    let barDivs = document.querySelectorAll('.bar div');
+    const skull = document.getElementById('skull');
+    const bar = document.getElementById('meter-bar');
     let value = 0;
-    let max = 999;
-    let active = false;
+    let interval = null;
 
-    function increasePower() {
-      if (value >= max) return;
-      value += Math.floor(Math.random() * 30) + 10;
-      if (value > max) value = max;
-      output.textContent = value;
-
-      const barsToShow = Math.floor((value / max) * barDivs.length);
-      barDivs.forEach((div, i) => {
-        div.style.background = i < barsToShow ? '#00ccff' : '#6a00ff';
-      });
-    }
-
-    // Поддержка клавиши Громкость +
-    window.addEventListener('keydown', function(e) {
-      if (e.key === 'VolumeUp') {
-        e.preventDefault();
-        increasePower();
-      }
+    skull.addEventListener('click', () => {
+      if (interval) return; // Уже запущено
+      interval = setInterval(() => {
+        value += 1;
+        if (value > 100) {
+          value = 100;
+          clearInterval(interval);
+          interval = null;
+        }
+        bar.style.width = value + '%';
+      }, 100); // медленно нарастает
     });
 
-    // Android-хак для Volume+
-    window.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        window.focus();
+    // Поддержка Volume+
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "VolumeUp" || e.keyCode === 175) {
+        skull.click();
       }
-    });
-
-    // Альтернатива: клик по экрану тоже активирует
-    window.addEventListener('click', () => {
-      increasePower();
     });
   </script>
 </body>
