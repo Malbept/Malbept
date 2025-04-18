@@ -1,44 +1,49 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Потужнометр</title>
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #0a0f2c, #141d47);
+      background: linear-gradient(135deg, #0a0f2c, #240046);
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      overflow: hidden;
     }
 
     .container {
-      background: #111944;
+      background: rgba(30, 20, 60, 0.9);
+      border: 2px solid #6a00ff;
       border-radius: 20px;
       padding: 30px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.6);
+      box-shadow: 0 0 25px #6a00ff88, 0 0 10px #00ccff44;
       text-align: center;
-      width: 320px;
+      width: 340px;
     }
 
     .title {
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
       margin-bottom: 20px;
+      color: #a8b6ff;
+      text-shadow: 0 0 5px #6a00ff;
     }
 
     .bar-container {
-      background: #1c245f;
+      background: #1e1b4b;
       border-radius: 10px;
       padding: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+      box-shadow: inset 0 0 10px #00000088;
     }
 
     .bar {
@@ -50,24 +55,33 @@
     }
 
     .bar div {
-      background: #3b4c9c;
+      background: #6a00ff;
       width: 6px;
       height: 20px;
       border-radius: 3px;
       margin: 2px;
+      box-shadow: 0 0 5px #6a00ffcc;
+      transition: background 0.2s;
     }
 
     .output {
-      font-size: 48px;
+      font-size: 52px;
       font-weight: bold;
       margin-top: 10px;
       color: #00ccff;
+      text-shadow: 0 0 10px #00ccff;
     }
 
     .sensitivity {
       font-size: 14px;
       margin-top: 5px;
-      color: #aaa;
+      color: #bbb;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #555;
     }
   </style>
 </head>
@@ -76,7 +90,8 @@
     <div class="title">Потужнометр</div>
     <div class="bar-container">
       <div>😵</div>
-      <div class="bar">
+      <div class="bar" id="bar">
+        <!-- 20 полосок -->
         <div></div><div></div><div></div><div></div><div></div>
         <div></div><div></div><div></div><div></div><div></div>
         <div></div><div></div><div></div><div></div><div></div>
@@ -86,16 +101,47 @@
     </div>
     <div class="output" id="output">0</div>
     <div class="sensitivity">Чутливість ×1.0</div>
+    <div class="footer">Натисни гучність + для старту</div>
   </div>
 
   <script>
-    // Пример увеличения значений
     let output = document.getElementById('output');
+    let barDivs = document.querySelectorAll('.bar div');
     let value = 0;
-    setInterval(() => {
-      value = Math.min(value + Math.floor(Math.random() * 5), 999);
+    let max = 999;
+    let active = false;
+
+    function increasePower() {
+      if (value >= max) return;
+      value += Math.floor(Math.random() * 30) + 10;
+      if (value > max) value = max;
       output.textContent = value;
-    }, 500);
+
+      const barsToShow = Math.floor((value / max) * barDivs.length);
+      barDivs.forEach((div, i) => {
+        div.style.background = i < barsToShow ? '#00ccff' : '#6a00ff';
+      });
+    }
+
+    // Поддержка клавиши Громкость +
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'VolumeUp') {
+        e.preventDefault();
+        increasePower();
+      }
+    });
+
+    // Android-хак для Volume+
+    window.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        window.focus();
+      }
+    });
+
+    // Альтернатива: клик по экрану тоже активирует
+    window.addEventListener('click', () => {
+      increasePower();
+    });
   </script>
 </body>
 </html>
