@@ -1,161 +1,41 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Потужна Гра</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(180deg, #0057b7, #ffd700);
-      font-family: sans-serif;
-      overflow: hidden;
-    }
-
-    .container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90vw;
-      max-width: 400px;
-      height: 80vh;
-      background: rgba(255,255,255,0.05);
-      border: 2px solid #fff;
-      border-radius: 20px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-evenly;
-      padding: 20px;
-    }
-
-    .title {
-      font-size: 2.2rem;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 1px 1px 4px #000;
-    }
-
-    .skull {
-      width: 110px;
-      height: 110px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/9/99/Skull_icon.svg') center/contain no-repeat;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .skull:active {
-      transform: scale(0.95);
-    }
-
-    .meter-container {
-      width: 80%;
-      height: 30px;
-      background: #222;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: inset 0 0 10px #000;
-    }
-
-    .meter-bar {
-      width: 0%;
-      height: 100%;
-      background: linear-gradient(90deg, #ffd700, #ffeb3b);
-      transition: width 0.3s;
-    }
-
-    .stats {
-      text-align: center;
-      color: #fff;
-      font-size: 1.2rem;
-      text-shadow: 1px 1px 2px #000;
-    }
-
-    .nav {
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      margin-top: 10px;
-    }
-
-    .nav button {
-      background: rgba(0,0,0,0.2);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      padding: 10px 20px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    .nav button:hover {
-      background: rgba(255,255,255,0.2);
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Потужно!</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <div class="title">Потужна Гра</div>
-    <div class="skull" id="skull"></div>
-    <div class="meter-container">
-      <div class="meter-bar" id="meter-bar"></div>
+    <h1 class="title">Потужність</h1>
+
+    <div class="power-meter">
+      <div class="power-fill" id="powerFill"></div>
     </div>
-    <div class="stats">
-      Потужність: <span id="score">0</span><br>
-      Рекорд: <span id="highscore">0</span>
+
+    <button class="skull-btn" id="skullBtn">
+      <img src="assets/skull.svg" alt="Череп"/>
+    </button>
+
+    <div class="power-value" id="powerValue">0</div>
+
+    <div class="menu">
+      <button onclick="showSection('store')">Магазин</button>
+      <button onclick="showSection('rating')">Рейтинг</button>
+      <button onclick="showSection('pvp')">PvP</button>
     </div>
-    <div class="nav">
-      <button>Ігри</button>
-      <button>Ще щось</button>
-      <button>Про нас</button>
-    </div>
+
+    <div class="section" id="storeSection" style="display:none;">Магазин скоро</div>
+    <div class="section" id="ratingSection" style="display:none;">Рейтинг скоро</div>
+    <div class="section" id="pvpSection" style="display:none;">PvP скоро</div>
   </div>
 
-  <script>
-    const skull = document.getElementById('skull');
-    const bar = document.getElementById('meter-bar');
-    const scoreText = document.getElementById('score');
-    const highscoreText = document.getElementById('highscore');
+  <audio id="clickSound" src="assets/click.mp3" preload="auto"></audio>
+  <audio id="bgMusic" src="assets/bg.mp3" loop autoplay></audio>
 
-    let value = 0;
-    let power = 0;
-    let interval = null;
-    let highscore = localStorage.getItem('highscore') || 0;
-
-    highscoreText.textContent = highscore;
-
-    skull.addEventListener('click', () => {
-      if (interval) return;
-      value = 0;
-      interval = setInterval(() => {
-        value += 1;
-        if (value > 100) {
-          clearInterval(interval);
-          interval = null;
-          value = 0;
-          power += 1;
-          scoreText.textContent = power;
-          if (power > highscore) {
-            highscore = power;
-            localStorage.setItem('highscore', highscore);
-            highscoreText.textContent = highscore;
-          }
-        }
-        bar.style.width = value + '%';
-      }, 40);
-    });
-
-    // Volume+ для запуска
-    window.addEventListener("keydown", function(e) {
-      if (e.key === "VolumeUp" || e.keyCode === 175) {
-        skull.click();
-      }
-    });
-  </script>
+  <script src="data.js"></script>
+  <script src="api.js"></script>
+  <script src="game.js"></script>
 </body>
 </html>
