@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ПотужноКлік</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'/>">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body class="theme-default">
+    <div class="container">
+        <div class="notification" id="notification"></div>
+        <!-- Telegram Login -->
+        <div id="telegramLogin">
+            <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="PotuzhnoMetrUA_bot" data-size="large" data-onauth="onTelegramAuth(user)"></script>
+        </div>
+        <!-- Вкладки -->
+        <div class="tab-content" id="clickerTab">
+            <h1>ПотужноКлік</h1>
+            <div class="stats">
+                <p>Монети: <span id="coins">0</span></p>
+                <p>Рівень: <span id="level">1</span></p>
+                <p>XP: <span id="xp">0</span>/<span id="xpToNext">100</span></p>
+                <p>Енергія: <span id="energy">100</span>/100</p>
+                <p>Енерго-Щит: <span id="shield">0</span>/10</p>
+                <p>Статус: <span id="premiumStatus">Звичайний</span></p>
+            </div>
+            <div class="clicker" id="clicker">Молот</div>
+            <div class="click-animation" id="clickAnimation"></div>
+            <div class="combo" id="combo">Комбо: x<span id="comboMultiplier">1</span></div>
+        </div>
+        <div class="tab-content" id="shopTab" style="display: none;">
+            <h2>Магазин</h2>
+            <div id="shopItems"></div>
+        </div>
+        <div class="tab-content" id="questsTab" style="display: none;">
+            <h2>Квести</h2>
+            <div id="questList"></div>
+        </div>
+        <div class="tab-content" id="battlePassTab" style="display: none;">
+            <h2>Батл-пасс (Рівень: <span id="battlePassLevel">1</span>)</h2>
+            <p>XP: <span id="battlePassXP">0</span>/<span id="battlePassXPToNext">1000</span></p>
+            <div id="battlePassTasks"></div>
+        </div>
+        <div class="tab-content" id="minigamesTab" style="display: none;">
+            <h2>Міні-ігри</h2>
+            <div id="minigameArea"></div>
+        </div>
+        <div class="tab-content" id="referralsTab" style="display: none;">
+            <h2>Реферали</h2>
+            <p>Ваша реферальна посилання: <span id="referralLink"></span></p>
+            <button onclick="copyReferralLink()">Скопіювати</button>
+            <p>Запросити друга:</p>
+            <input type="text" id="referralCode" placeholder="Введіть код друга">
+            <button onclick="useReferral()">Активувати</button>
+        </div>
+        <div class="tab-content" id="settingsTab" style="display: none;">
+            <h2>Налаштування</h2>
+            <label>Тема фону:</label>
+            <select id="backgroundTheme">
+                <option value="default">Стандартна</option>
+                <option value="neon">Неон</option>
+                <option value="cosmo">Космос</option>
+                <option value="retro">Ретро</option>
+                <option value="cyberpunk">Кіберпанк</option>
+                <option value="lavender">Лаванда</option>
+                <option value="sunset">Захід Сонця</option>
+                <option value="forest">Ліс</option>
+                <option value="ocean">Океан</option>
+                <option value="galaxy">Галактика</option>
+                <option value="midnight">Північ</option>
+                <option value="desert">Пустеля</option>
+                <option value="aurora">Полярне Сяйво</option>
+                <option value="volcano">Вулкан</option>
+                <option value="city">Місто</option>
+                <option value="twilight">Сутінки</option>
+                <option value="storm">Шторм</option>
+                <option value="nebula">Туманність</option>
+                <option value="ice">Крига</option>
+                <option value="jungle">Джунглі</option>
+                <option value="dawn">Світанок</option>
+                <option value="coral">Корал</option>
+                <option value="mystic">Містика</option>
+                <option value="velvet">Оксамит</option>
+                <option value="steampunk">Стімпанк</option>
+            </select>
+            <label>Скін клікера:</label>
+            <select id="clickerSkin">
+                <option value="Молот">Молот</option>
+                <option value="Меч">Меч</option>
+                <option value="Зірка">Зірка</option>
+                <option value="Кристал">Кристал</option>
+                <option value="Вогонь">Вогонь</option>
+                <option value="Щит">Щит</option>
+                <option value="Лук">Лук</option>
+            </select>
+            <label>Промокод:</label>
+            <input type="text" id="promoInput" placeholder="Введіть промокод">
+            <button onclick="redeemCode()">Активувати</button>
+            <button onclick="shareGame()">Поділитися (+200 монет)</button>
+            <div id="adminPanel" style="display: none;">
+                <h3>Адмін-панель (@vadimkapipirka)</h3>
+                <label>Нове завдання:</label>
+                <input type="text" id="taskName" placeholder="Назва завдання">
+                <input type="number" id="taskGoal" placeholder="Ціль">
+                <input type="number" id="taskReward" placeholder="Нагорода">
+                <select id="taskType">
+                    <option value="clicks">Кліки</option>
+                    <option value="purchases">Покупки</option>
+                    <option value="coins">Монети</option>
+                    <option value="level">Рівень</option>
+                    <option value="minigame">Міні-гра</option>
+                    <option value="powerStrike">Потужний Удар</option>
+                    <option value="treasureHunt">Скарб Енергії</option>
+                    <option value="weaknessBattle">Битва зі Слабкістю</option>
+                    <option value="energyBurst">Енергетичний Спалах</option>
+                    <option value="heroReaction">Реакція Героя</option>
+                    <option value="spaceDefense">Космічний Захист</option>
+                    <option value="energyPuzzle">Енерго-Пазл</option>
+                    <option value="hiddenObject">Пошук Предметів</option>
+                    <option value="cosmicStorm">Космічний Шторм</option>
+                    <option value="energyCube">Енерго-Куб</option>
+                    <option value="titanReaction">Реакція Титана</option>
+                    <option value="powerMaze">Лабіринт Сили</option>
+                    <option value="galacticShooter">Галактичний Тир</option>
+                    <option value="telegramSubscribe">Підписка на Telegram</option>
+                </select>
+                <input type="text" id="taskChannel" placeholder="Посилання на Telegram-канал (опціонально)">
+                <button onclick="addTask()">Додати завдання</button>
+                <label>Новий промокод:</label>
+                <input type="text" id="promoCode" placeholder="Код">
+                <input type="number" id="promoReward" placeholder="Нагорода">
+                <button onclick="addPromo()">Додати промокод</button>
+            </div>
+        </div>
+        <!-- Нижня панель -->
+        <div class="nav-bar">
+            <button class="nav-button active" onclick="showTab('clickerTab')">Клікер</button>
+            <button class="nav-button" onclick="showTab('shopTab')">Магазин</button>
+            <button class="nav-button" onclick="showTab('questsTab')">Квести</button>
+            <button class="nav-button" onclick="showTab('battlePassTab')">Батл-пасс</button>
+            <button class="nav-button" onclick="showTab('minigamesTab')">Міні-ігри</button>
+            <button class="nav-button" onclick="showTab('referralsTab')">Реферали</button>
+            <button class="nav-button" onclick="showTab('settingsTab')">Налаштування</button>
+        </div>
+    </div>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/minigames.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
