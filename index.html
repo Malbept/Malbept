@@ -1,281 +1,126 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Потужнометр</title>
+  <title>ПОТУЖНОМЕТР</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="themes.css">
 </head>
-<body>
+<body class="dark">
   <div id="game-container">
-    <!-- Заголовок -->
-    <div class="header">
-      <img src="flag.png" alt="Flag" class="flag">
-      <h1 data-lang="title">ПОТУЖНОМЕТР</h1>
-      <div class="pm-label" data-lang="vodiem">ВОДЄМ</div>
-    </div>
-
-    <!-- Настройки -->
-    <div class="settings">
-      <select id="language-select" onchange="changeLanguage()">
-        <option value="ru">Русский</option>
-        <option value="en">English</option>
-      </select>
-      <select id="theme-select" onchange="changeTheme()">
-        <option value="dark">Тёмная</option>
-        <option value="light">Светлая</option>
-        <option value="ukrainian">Украинская</option>
-      </select>
-    </div>
-
-    <!-- Информация об игроке -->
-    <div class="player-info">
-      <div id="player-name" class="player-name" data-lang="player">Игрок: </div>
-      <div id="level" class="level" data-lang="level">Уровень: 1</div>
-      <div id="score" class="score">0P</div>
-      <div id="energy" class="energy" data-lang="energy">Энергия: 100/100</div>
-    </div>
-
-    <!-- Прогресс-бар -->
-    <div class="progress-section">
-      <div class="progress-bar">
-        <div class="progress-fill"></div>
+    <div id="main" class="screen active">
+      <div class="header">
+        <img src="ukraine-flag.png" alt="Ukrainian Flag" class="flag">
+        <h1 data-lang="title">ПОТУЖНОМЕТР</h1>
+        <span class="pm-label">VODЄM</span>
       </div>
-      <div class="progress-text">0%</div>
-    </div>
-
-    <!-- Кнопка клика -->
-    <button id="tap-button" data-lang="tap">ПТЫК</button>
-
-    <!-- Вкладки -->
-    <div class="tab-buttons">
-      <button class="tab-button active" onclick="openTab('main')" data-lang="main">Главная</button>
-      <button class="tab-button" onclick="openShop()" data-lang="shop">Магазин</button>
-      <button class="tab-button" onclick="openTab('tasks')" data-lang="tasks">Задания</button>
-      <button class="tab-button" onclick="openTab('upgrades')" data-lang="upgrades">Улучшения</button>
-      <button class="tab-button" onclick="openTab('promo')" data-lang="promo">Промокоды</button>
-    </div>
-
-    <!-- Вкладка Main -->
-    <div id="main" class="tab-content active">
+      <div class="player-info">
+        <div class="info-card" id="player-name"></div>
+        <div class="info-card score-card" id="score">0P</div>
+        <div class="info-card" id="energy">Енергія: 100/100</div>
+        <div class="info-card" id="level">Рівень: 1</div>
+      </div>
+      <div class="progress-section">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+          <span class="progress-text">0%</span>
+        </div>
+      </div>
+      <button id="tap-button" class="tap-button" data-lang="tap">ПТЫК</button>
       <div class="made-in" data-lang="made_in">MADE IN ВОДЄМ</div>
     </div>
-
-    <!-- Вкладка Tasks -->
-    <div id="tasks" class="tab-content">
-      <h3 data-lang="tasks">Задания</h3>
-      <div id="task-list"></div>
+    <div id="tasks" class="screen">
+      <h3 data-lang="tasks">Завдання</h3>
+      <div id="task-list" class="card-grid"></div>
       <div id="add-task-section">
-        <input type="text" id="new-task-description" placeholder="Описание задания">
-        <input type="number" id="new-task-target" placeholder="Цель">
-        <input type="number" id="new-task-reward" placeholder="Награда">
+        <h4 data-lang="add_task">Додати завдання</h4>
+        <input type="text" id="new-task-description" placeholder="Опис завдання">
+        <input type="number" id="new-task-target" placeholder="Мета">
+        <input type="number" id="new-task-reward" placeholder="Нагорода">
         <select id="new-task-type">
-          <option value="clicks">Клики</option>
+          <option value="clicks">Кліки</option>
           <option value="score">Очки</option>
-          <option value="upgrades">Покупки улучшений</option>
+          <option value="upgrades">Покращення</option>
+          <option value="social">Соціальні</option>
         </select>
-        <button onclick="addNewTask()" data-lang="add_task">Добавить задание</button>
+        <input type="text" id="new-task-url" placeholder="URL (для соціальних завдань)">
+        <input type="text" id="new-task-expires" placeholder="Срок действия (YYYY-MM-DD)">
+        <button id="add-task-button" data-lang="add_task">Додати завдання</button>
       </div>
     </div>
-
-    <!-- Вкладка Upgrades -->
-    <div id="upgrades" class="tab-content">
-      <div class="shop-category">
-        <h3 data-lang="upgrades">Улучшения</h3>
-        <div class="shop-item" id="click-multiplier-1">
-          <p data-lang="click_multiplier_1">Казацкая Сила +20%<br>Стоимость: 50P</p>
-          <button onclick="buyClickMultiplier(1, 50, 1.2)">Купить</button>
-        </div>
-        <div class="shop-item" id="click-multiplier-2">
-          <p data-lang="click_multiplier_2">Гетманская Мощь +50%<br>Стоимость: 200P</p>
-          <button onclick="buyClickMultiplier(2, 200, 1.5)">Купить</button>
-        </div>
-        <div class="shop-item" id="auto-clicker-1">
-          <p data-lang="auto_clicker_1">Сечевые Стрельцы +2P/сек<br>Стоимость: 100P</p>
-          <button onclick="buyAutoClicker(1, 100, 2)">Купить</button>
-        </div>
-        <div class="shop-item" id="auto-clicker-2">
-          <p data-lang="auto_clicker_2">Казацкий Автомат +5P/сек<br>Стоимость: 300P</p>
-          <button onclick="buyAutoClicker(2, 300, 5)">Купить</button>
-        </div>
-        <div class="shop-item" id="energy-max-1">
-          <p data-lang="energy_max_1">Запорожская Выносливость +50<br>Стоимость: 150P</p>
-          <button onclick="buyEnergyMax(1, 150, 50)">Купить</button>
-        </div>
+    <div id="promo" class="screen">
+      <h3 data-lang="promo">Промокоди</h3>
+      <div class="promo-section">
+        <input type="text" id="promo-code-input" placeholder="Введіть промокод">
+        <button id="redeem-promo-button" data-lang="redeem_promo">Активувати</button>
       </div>
-    </div>
-
-    <!-- Вкладка Promo -->
-    <div id="promo" class="tab-content">
-      <h3 data-lang="promo">Промокоды</h3>
-      <input type="text" id="promo-code-input" placeholder="Введите промокод">
-      <button onclick="redeemPromoCode()" data-lang="redeem_promo">Активировать</button>
       <div id="add-promo-section">
-        <input type="text" id="new-promo-code" placeholder="Новый промокод">
-        <input type="number" id="new-promo-reward" placeholder="Награда">
-        <button onclick="addNewPromoCode()" data-lang="add_promo">Добавить промокод</button>
+        <h4 data-lang="add_promo">Додати промокод</h4>
+        <input type="text" id="new-promo-code" placeholder="Промокод">
+        <input type="number" id="new-promo-reward" placeholder="Нагорода">
+        <input type="number" id="new-promo-uses" placeholder="Ліміт використань (-1 для безкінечності)">
+        <input type="text" id="new-promo-expires" placeholder="Срок действия (YYYY-MM-DD)">
+        <button id="add-promo-button" data-lang="add_promo">Додати промокод</button>
       </div>
     </div>
-  </div>
-
-  <!-- Модальное окно магазина -->
-  <div id="shop-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-button" onclick="closeShop()">×</span>
-      <h2 data-lang="shop">Магазин</h2>
-      <div class="shop-category">
-        <h3 data-lang="boosts">Бусты</h3>
-        <div class="shop-item" id="energy-boost">
-          <p data-lang="energy_boost">Горілка для Енергії (+50 Энергии)<br>Стоимость: 100P</p>
-          <button onclick="buyEnergyBoost()">Купить</button>
-        </div>
-        <div class="shop-item" id="click-boost">
-          <p data-lang="click_boost">Крыивка Силы +20% (60 сек)<br>Стоимость: 150P</p>
-          <button onclick="buyClickBoost()">Купить</button>
-        </div>
-        <div class="shop-item" id="auto-click-boost">
-          <p data-lang="auto_click_boost">Дух Бандеры +20% (60 сек)<br>Стоимость: 200P</p>
-          <button onclick="buyAutoClickBoost()">Купить</button>
-        </div>
-        <div class="shop-item" id="passive-income">
-          <p data-lang="passive_income">Кобзарский Заработок +5P/сек<br>Стоимость: 500P</p>
-          <button onclick="buyPassiveIncome()">Купить</button>
-        </div>
-        <div class="shop-item" id="visual-upgrade">
-          <p data-lang="visual_upgrade">Вышиванка для ПТЫК<br>Стоимость: 1000P</p>
-          <button onclick="buyVisualUpgrade()">Купить</button>
-        </div>
-        <!-- Новые бусты -->
-        <div class="shop-item" id="boost-1">
-          <p data-lang="boost_1">Сало для Силы +10% (30 сек)<br>Стоимость: 80P</p>
-          <button onclick="buyBoost(1, 80, 1.1, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-2">
-          <p data-lang="boost_2">Борщ для Энергии (+30 Энергии)<br>Стоимость: 70P</p>
-          <button onclick="buyEnergyBoostCustom(2, 70, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-3">
-          <p data-lang="boost_3">Калиновая Мощь +15% (45 сек)<br>Стоимость: 120P</p>
-          <button onclick="buyBoost(3, 120, 1.15, 45)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-4">
-          <p data-lang="boost_4">Днепровская Выносливость (+100 Энергии)<br>Стоимость: 200P</p>
-          <button onclick="buyEnergyBoostCustom(4, 200, 100)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-5">
-          <p data-lang="boost_5">Чумацкий Путь +10P/сек (60 сек)<br>Стоимость: 250P</p>
-          <button onclick="buyPassiveBoost(5, 250, 10, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-6">
-          <p data-lang="boost_6">Кобза Удачи (+5% к очкам)<br>Стоимость: 300P</p>
-          <button onclick="buyPermanentBoost(6, 300, 1.05)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-7">
-          <p data-lang="boost_7">Степной Ветер +20P/сек (30 сек)<br>Стоимость: 180P</p>
-          <button onclick="buyPassiveBoost(7, 180, 20, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-8">
-          <p data-lang="boost_8">Чернобыльский Импульс +25% (60 сек)<br>Стоимость: 400P</p>
-          <button onclick="buyBoost(8, 400, 1.25, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-9">
-          <p data-lang="boost_9">Тризуб Славы (+10% к очкам)<br>Стоимость: 500P</p>
-          <button onclick="buyPermanentBoost(9, 500, 1.1)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-10">
-          <p data-lang="boost_10">Песня Кобзаря +15P/сек<br>Стоимость: 600P</p>
-          <button onclick="buyPassiveIncomeCustom(10, 600, 15)">Купить</button>
-        </div>
-        <!-- Добавим ещё 20 бустов -->
-        <div class="shop-item" id="boost-11">
-          <p data-lang="boost_11">Дух Карпат +5% (60 сек)<br>Стоимость: 90P</p>
-          <button onclick="buyBoost(11, 90, 1.05, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-12">
-          <p data-lang="boost_12">Славянский Щит +20 Энергии<br>Стоимость: 60P</p>
-          <button onclick="buyEnergyBoostCustom(12, 60, 20)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-13">
-          <p data-lang="boost_13">Воля Народа +10% (45 сек)<br>Стоимость: 110P</p>
-          <button onclick="buyBoost(13, 110, 1.1, 45)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-14">
-          <p data-lang="boost_14">Солнечный Подсолнух +50 Энергии<br>Стоимость: 130P</p>
-          <button onclick="buyEnergyBoostCustom(14, 130, 50)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-15">
-          <p data-lang="boost_15">Запорожский Дуб +10P/сек (60 сек)<br>Стоимость: 220P</p>
-          <button onclick="buyPassiveBoost(15, 220, 10, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-16">
-          <p data-lang="boost_16">Скифское Золото +15% к очкам<br>Стоимость: 350P</p>
-          <button onclick="buyPermanentBoost(16, 350, 1.15)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-17">
-          <p data-lang="boost_17">Донецкий Уголь +15P/сек (30 сек)<br>Стоимость: 160P</p>
-          <button onclick="buyPassiveBoost(17, 160, 15, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-18">
-          <p data-lang="boost_18">Львовский Кофе +20% (60 сек)<br>Стоимость: 300P</p>
-          <button onclick="buyBoost(18, 300, 1.2, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-19">
-          <p data-lang="boost_19">Одесский Бриз +10% к очкам<br>Стоимость: 400P</p>
-          <button onclick="buyPermanentBoost(19, 400, 1.1)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-20">
-          <p data-lang="boost_20">Херсонский Арбуз +20P/сек<br>Стоимость: 450P</p>
-          <button onclick="buyPassiveIncomeCustom(20, 450, 20)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-21">
-          <p data-lang="boost_21">Киевский Торт +10% (60 сек)<br>Стоимость: 100P</p>
-          <button onclick="buyBoost(21, 100, 1.1, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-22">
-          <p data-lang="boost_22">Крымский Мост +30 Энергии<br>Стоимость: 80P</p>
-          <button onclick="buyEnergyBoostCustom(22, 80, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-23">
-          <p data-lang="boost_23">Полтавская Битва +15% (45 сек)<br>Стоимость: 130P</p>
-          <button onclick="buyBoost(23, 130, 1.15, 45)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-24">
-          <p data-lang="boost_24">Черниговский Мёд +50 Энергии<br>Стоимость: 140P</p>
-          <button onclick="buyEnergyBoostCustom(24, 140, 50)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-25">
-          <p data-lang="boost_25">Харьковский Танк +15P/сек (60 сек)<br>Стоимость: 240P</p>
-          <button onclick="buyPassiveBoost(25, 240, 15, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-26">
-          <p data-lang="boost_26">Житомирский Гранит +15% к очкам<br>Стоимость: 370P</p>
-          <button onclick="buyPermanentBoost(26, 370, 1.15)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-27">
-          <p data-lang="boost_27">Сумской Лес +20P/сек (30 сек)<br>Стоимость: 170P</p>
-          <button onclick="buyPassiveBoost(27, 170, 20, 30)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-28">
-          <p data-lang="boost_28">Ровенский Янтарь +20% (60 сек)<br>Стоимость: 320P</p>
-          <button onclick="buyBoost(28, 320, 1.2, 60)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-29">
-          <p data-lang="boost_29">Винницкая Вишня +10% к очкам<br>Стоимость: 420P</p>
-          <button onclick="buyPermanentBoost(29, 420, 1.1)">Купить</button>
-        </div>
-        <div class="shop-item" id="boost-30">
-          <p data-lang="boost_30">Николаевский Корабль +25P/сек<br>Стоимость: 480P</p>
-          <button onclick="buyPassiveIncomeCustom(30, 480, 25)">Купить</button>
+    <div id="settings" class="screen">
+      <h3 data-lang="settings">Налаштування</h3>
+      <div class="settings-section">
+        <label for="language-select" data-lang="language">Мова:</label>
+        <select id="language-select">
+          <option value="uk">Українська</option>
+          <option value="ru">Русский</option>
+          <option value="en">English</option>
+        </select>
+        <label for="theme-select" data-lang="theme">Тема:</label>
+        <select id="theme-select"></select>
+        <div id="custom-theme-section">
+          <h4 data-lang="custom_theme">Кастомізація</h4>
+          <label for="custom-theme-bg">Колір фону:</label>
+          <input type="color" id="custom-theme-bg" value="#1e3a8a">
+          <label for="custom-theme-button">Колір кнопок:</label>
+          <input type="color" id="custom-theme-button" value="#3b82f6">
+          <label for="custom-theme-text">Колір тексту:</label>
+          <input type="color" id="custom-theme-text" value="#ffffff">
+          <label for="custom-theme-card">Колір карточок:</label>
+          <input type="color" id="custom-theme-card" value="#ffffff">
+          <label for="custom-theme-progress">Колір прогрес-бару:</label>
+          <input type="color" id="custom-theme-progress" value="#60a5fa">
+          <label for="custom-theme-header">Колір заголовків:</label>
+          <input type="color" id="custom-theme-header" value="#ffffff">
+          <label for="custom-theme-shadow">Колір тіні:</label>
+          <input type="color" id="custom-theme-shadow" value="#000000">
+          <button id="save-custom-theme" data-lang="save_theme">Зберегти тему</button>
         </div>
       </div>
     </div>
+    <div id="leaderboard" class="screen">
+      <h3 data-lang="leaderboard">Лідерборд</h3>
+      <h4 data-lang="leaderboard_score">Топ за монетами</h4>
+      <div id="player-score-rank"></div>
+      <div id="leaderboard-score-list" class="card-grid"></div>
+      <h4 data-lang="leaderboard_clicks">Топ за кліками</h4>
+      <div id="player-clicks-rank"></div>
+      <div id="leaderboard-clicks-list" class="card-grid"></div>
+    </div>
   </div>
-
-  <!-- Звуки -->
+  <div class="bottom-nav">
+    <button class="nav-button shop-button" data-lang="shop"><img src="shop-icon.png" alt="Shop"></button>
+    <button class="nav-button tasks-button" data-lang="tasks"><img src="tasks-icon.png" alt="Tasks"></button>
+    <button class="nav-button promo-button" data-lang="promo"><img src="promo-icon.png" alt="Promo"></button>
+    <button class="nav-button main-button active" data-lang="main"><img src="main-icon.png" alt="Main"></button>
+    <button class="nav-button leaderboard-button" data-lang="leaderboard"><img src="leaderboard-icon.png" alt="Leaderboard"></button>
+    <button class="nav-button settings-button" data-lang="settings"><img src="settings-icon.png" alt="Settings"></button>
+  </div>
   <audio id="click-sound" src="click.mp3"></audio>
   <audio id="buy-sound" src="buy.mp3"></audio>
-
-  <script src="game.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="translations.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="ui.js"></script>
+  <script type="module" src="admin.js"></script>
+  <script type="module" src="leaderboard.js"></script>
 </body>
 </html>

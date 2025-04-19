@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Магазин - ПОТУЖНОМЕТР</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="themes.css">
+</head>
+<body class="dark">
+  <div id="game-container">
+    <div id="shop" class="screen active">
+      <div class="header">
+        <img src="ukraine-flag.png" alt="Ukrainian Flag" class="flag">
+        <h1 data-lang="shop">Магазин</h1>
+        <span class="pm-label">VODЄM</span>
+      </div>
+      <div class="shop-category">
+        <h3 data-lang="click_upgrades">Покращення кліків</h3>
+        <div class="card-grid">
+          <div class="shop-item" id="click-multiplier-1">
+            <p data-lang="click_multiplier_1">Козацька Сила +20%<br>Вартість: 50P</p>
+            <button onclick="buyClickMultiplier(1, 50, 1.2)">Купити</button>
+          </div>
+          <div class="shop-item" id="click-multiplier-2">
+            <p data-lang="click_multiplier_2">Гетьманська Могутність +50%<br>Вартість: 200P</p>
+            <button onclick="buyClickMultiplier(2, 200, 1.5)">Купити</button>
+          </div>
+          <div class="shop-item" id="click-multiplier-3">
+            <p data-lang="click_multiplier_3">Сила Запорожця +100%<br>Вартість: 500P</p>
+            <button onclick="buyClickMultiplier(3, 500, 2.0)">Купити</button>
+          </div>
+          <div class="shop-item" id="click-multiplier-4">
+            <p data-lang="click_multiplier_4">Міць Сагайдачного +150%<br>Вартість: 1000P</p>
+            <button onclick="buyClickMultiplier(4, 1000, 2.5)">Купити</button>
+          </div>
+          <div class="shop-item" id="click-multiplier-5">
+            <p data-lang="click_multiplier_5">Титан Кліків +200%<br>Вартість: 2000P</p>
+            <button onclick="buyClickMultiplier(5, 2000, 3.0)">Купити</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3 data-lang="auto_clickers">Автоклікери</h3>
+        <div class="card-grid">
+          <div class="shop-item" id="auto-clicker-1">
+            <p data-lang="auto_clicker_1">Січові Стрілки +2P/сек<br>Вартість: 100P</p>
+            <button onclick="buyAutoClicker(1, 100, 2)">Купити</button>
+          </div>
+          <div class="shop-item" id="auto-clicker-2">
+            <p data-lang="auto_clicker_2">Козацький Автомат +5P/сек<br>Вартість: 300P</p>
+            <button onclick="buyAutoClicker(2, 300, 5)">Купити</button>
+          </div>
+          <div class="shop-item" id="auto-clicker-3">
+            <p data-lang="auto_clicker_3">Армія УПА +10P/сек<br>Вартість: 600P</p>
+            <button onclick="buyAutoClicker(3, 600, 10)">Купити</button>
+          </div>
+          <div class="shop-item" id="auto-clicker-4">
+            <p data-lang="auto_clicker_4">Кибер-Козак +20P/сек<br>Вартість: 1200P</p>
+            <button onclick="buyAutoClicker(4, 1200, 20)">Купити</button>
+          </div>
+          <div class="shop-item" id="auto-clicker-5">
+            <p data-lang="auto_clicker_5">Потужний Дрон +50P/сек<br>Вартість: 2500P</p>
+            <button onclick="buyAutoClicker(5, 2500, 50)">Купити</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3 data-lang="energy_upgrades">Енергія</h3>
+        <div class="card-grid">
+          <div class="shop-item" id="energy-max-1">
+            <p data-lang="energy_max_1">Запорізька Витривалість +50<br>Вартість: 150P</p>
+            <button onclick="buyEnergyMax(1, 150, 50)">Купити</button>
+          </div>
+          <div class="shop-item" id="energy-max-2">
+            <p data-lang="energy_max_2">Сила Карпат +100<br>Вартість: 350P</p>
+            <button onclick="buyEnergyMax(2, 350, 100)">Купити</button>
+          </div>
+          <div class="shop-item" id="energy-max-3">
+            <p data-lang="energy_max_3">Дух Дніпра +200<br>Вартість: 800P</p>
+            <button onclick="buyEnergyMax(3, 800, 200)">Купити</button>
+          </div>
+          <div class="shop-item" id="energy-max-4">
+            <p data-lang="energy_max_4">Нескорений Дух +500<br>Вартість: 2000P</p>
+            <button onclick="buyEnergyMax(4, 2000, 500)">Купити</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3 data-lang="skins">Скіни</h3>
+        <div class="card-grid">
+          <div class="shop-item" id="skin-vyshyvanka">
+            <p data-lang="skin_vyshyvanka">Вишиванка<br>Вартість: 500P</p>
+            <button onclick="buySkin('vyshyvanka', 500)">Купити</button>
+          </div>
+          <div class="shop-item" id="skin-cossack">
+            <p data-lang="skin_cossack">Козацький Стиль<br>Вартість: 1000P</p>
+            <button onclick="buySkin('cossack', 1000)">Купити</button>
+          </div>
+          <div class="shop-item" id="skin-neon">
+            <p data-lang="skin_neon">Неоновий Воїн<br>Вартість: 1500P</p>
+            <button onclick="buySkin('neon', 1500)">Купити</button>
+          </div>
+          <div class="shop-item" id="skin-cyber">
+            <p data-lang="skin_cyber">Кібер-Козак<br>Вартість: 2000P</p>
+            <button onclick="buySkin('cyber', 2000)">Купити</button>
+          </div>
+        </div>
+      </div>
+      <div class="shop-category">
+        <h3 data-lang="boosts">Бусти</h3>
+        <div class="card-grid">
+          <div class="shop-item" id="boost-speed">
+            <p data-lang="boost_speed">Швидкість Кліків x2 (1 год)<br>Вартість: 300P</p>
+            <button onclick="buyBoost('speed', 300, 2, 3600)">Купити</button>
+          </div>
+          <div class="shop-item" id="boost-energy">
+            <p data-lang="boost_energy">Енергія x2 (1 год)<br>Вартість: 400P</p>
+            <button onclick="buyBoost('energy', 400, 2, 3600)">Купити</button>
+          </div>
+          <div class="shop-item" id="boost-score">
+            <p data-lang="boost_score">Очки x2 (1 год)<br>Вартість: 500P</p>
+            <button onclick="buyBoost('score', 500, 2, 3600)">Купити</button>
+          </div>
+          <div class="shop-item" id="boost-ultimate">
+            <p data-lang="boost_ultimate">Ультимейтум x3 (30 хв)<br>Вартість: 1000P</p>
+            <button onclick="buyBoost('ultimate', 1000, 3, 1800)">Купити</button>
+          </div>
+          <div class="shop-item" id="boost-mega">
+            <p data-lang="boost_mega">Мега Буст x5 (15 хв)<br>Вартість: 2000P</p>
+            <button onclick="buyBoost('mega', 2000, 5, 900)">Купити</button>
+          </div>
+        </div>
+      </div>
+      <div class="made-in" data-lang="made_in">MADE IN ВОДЄМ</div>
+    </div>
+  </div>
+  <div class="bottom-nav">
+    <button class="nav-button shop-button active" data-lang="shop"><img src="shop-icon.png" alt="Shop"></button>
+    <button class="nav-button tasks-button" data-lang="tasks"><img src="tasks-icon.png" alt="Tasks"></button>
+    <button class="nav-button promo-button" data-lang="promo"><img src="promo-icon.png" alt="Promo"></button>
+    <button class="nav-button main-button" data-lang="main"><img src="main-icon.png" alt="Main"></button>
+    <button class="nav-button leaderboard-button" data-lang="leaderboard"><img src="leaderboard-icon.png" alt="Leaderboard"></button>
+    <button class="nav-button settings-button" data-lang="settings"><img src="settings-icon.png" alt="Settings"></button>
+  </div>
+  <audio id="buy-sound" src="buy.mp3"></audio>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="translations.js"></script>
+  <script type="module" src="game.js"></script>
+  <script type="module" src="ui.js"></script>
+</body>
+</html>
