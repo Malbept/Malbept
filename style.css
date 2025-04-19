@@ -1,0 +1,394 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+    color: #fff;
+    overflow-x: hidden;
+    transition: background 0.5s;
+}
+
+/* Теми */
+.theme-default { background: linear-gradient(135deg, #ff6b6b, #4ecdc4); }
+.theme-neon { background: linear-gradient(135deg, #ff00ff, #00ffcc); }
+.theme-cosmo { background: linear-gradient(135deg, #1b263b, #778beb); }
+.theme-retro { background: linear-gradient(135deg, #f4a261, #e76f51); }
+.theme-cyberpunk { background: linear-gradient(135deg, #f72585, #7209b7); }
+.theme-lavender { background: linear-gradient(135deg, #d8b9ff, #9b59b6); }
+.theme-sunset { background: linear-gradient(135deg, #ff6b6b, #f1c40f); }
+.theme-forest { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+.theme-ocean { background: linear-gradient(135deg, #3498db, #2980b9); }
+.theme-galaxy { background: linear-gradient(135deg, #2c3e50, #8e44ad); }
+.theme-midnight { background: linear-gradient(135deg, #1e272e, #485460); }
+.theme-desert { background: linear-gradient(135deg, #e67e22, #d35400); }
+.theme-aurora { background: linear-gradient(135deg, #00ffcc, #8e44ad); }
+.theme-volcano { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+.theme-city { background: linear-gradient(135deg, #34495e, #95a5a6); }
+.theme-twilight { background: linear-gradient(135deg, #4834d4, #686de0); }
+.theme-storm { background: linear-gradient(135deg, #2f3640, #353b48); }
+.theme-nebula { background: linear-gradient(135deg, #ff9ff3, #feca57); }
+.theme-ice { background: linear-gradient(135deg, #dfe6e9, #b2bec3); }
+.theme-jungle { background: linear-gradient(135deg, #009432, #78e08f); }
+.theme-dawn { background: linear-gradient(135deg, #ffbe76, #f6e58d); }
+.theme-coral { background: linear-gradient(135deg, #ff6b81, #ff9f43); }
+.theme-mystic { background: linear-gradient(135deg, #6c5ce7, #a29bfe); }
+.theme-velvet { background: linear-gradient(135deg, #833471, #be2edd); }
+.theme-steampunk { background: linear-gradient(135deg, #8d5524, #d9a441); }
+
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+h1, h2, h3 {
+    margin: 10px 0;
+    font-size: 2em;
+}
+
+.stats p {
+    margin: 5px 0;
+    font-size: 1.2em;
+}
+
+.clicker {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    background: #ffd700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s;
+    animation: pulse 2s infinite;
+    font-size: 1.5em;
+}
+
+.clicker:active {
+    transform: scale(0.9);
+}
+
+.click-animation {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1em;
+    color: #00ffcc;
+}
+
+.combo {
+    margin: 10px 0;
+    font-size: 1.5em;
+}
+
+.tab-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: space-around;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.nav-button {
+    background: #ff6b6b;
+    border: none;
+    padding: 15px;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+    font-size: 1em;
+    min-width: 80px;
+    touch-action: manipulation;
+}
+
+.nav-button.active, .nav-button:hover {
+    background: #ff8787;
+    transform: scale(1.1);
+}
+
+.premium-button {
+    background: #ffd700;
+    color: #000;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+input, select, button {
+    padding: 12px;
+    margin: 6px;
+    border: none;
+    border-radius: 8px;
+    width: calc(100% - 28px);
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+button {
+    background: #ff6b6b;
+    color: white;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+button:hover {
+    background: #ff8787;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00ffcc;
+    color: #000;
+    padding: 12px 24px;
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+}
+
+.progress-bar {
+    width: 100%;
+    background: #ddd;
+    height: 12px;
+    border-radius: 6px;
+    margin: 6px 0;
+}
+
+.progress-fill {
+    background: #00ffcc;
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.3s;
+}
+
+.minigame {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.minigame-area {
+    position: relative;
+    height: 240px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.power-strike-bar {
+    width: 100%;
+    height: 24px;
+    background: #ddd;
+    position: relative;
+    margin: 24px 0;
+}
+
+.power-strike-zone {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 100%;
+    background: #00ffcc;
+}
+
+.power-strike-indicator {
+    position: absolute;
+    width: 20px;
+    height: 100%;
+    background: #ff6b6b;
+}
+
+.treasure-chest {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: #ffd700;
+    margin: 6px;
+    line-height: 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.weakness-enemy {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1em;
+}
+
+.weakness-hp {
+    width: 120px;
+    height: 12px;
+    background: #ddd;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 6px;
+}
+
+.weakness-hp-fill {
+    background: #ff6b6b;
+    height: 100%;
+    border-radius: 6px;
+}
+
+.energy-burst-meter {
+    width: 100%;
+    height: 24px;
+    background: #ddd;
+    margin: 24px 0;
+    border-radius: 6px;
+}
+
+.energy-burst-fill {
+    background: #00ffcc;
+    height: 100%;
+    border-radius: 6px;
+}
+
+.hero-reaction-target {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    background: #ff6b6b;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.space-defense-asteroid {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #7f8c8d;
+    border-radius: 50%;
+}
+
+.energy-puzzle-tile {
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    background: #3498db;
+    margin: 6px;
+    line-height: 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.energy-puzzle-tile.active {
+    background: #00ffcc;
+}
+
+.hidden-object {
+    position: absolute;
+    width: 36px;
+    height: 36px;
+    background: #ffd700;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.cosmic-storm-particle {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #00ffcc;
+    border-radius: 50%;
+}
+
+.energy-cube {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #ff6b6b;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.titan-reaction-target {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #ffd700;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.maze-cell {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border: 1px solid #fff;
+    background: #2c3e50;
+}
+
+.maze-cell.path {
+    background: #00ffcc;
+}
+
+.maze-cell.player {
+    background: #ff6b6b;
+}
+
+.shooter-target {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: #e74c3c;
+    border-radius: 50%;
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+/* Адаптація для телефонів */
+@media (max-width: 600px) {
+    h1, h2, h3 {
+        font-size: 1.5em;
+    }
+    .stats p {
+        font-size: 1em;
+    }
+    .clicker {
+        width: 120px;
+        height: 120px;
+        font-size: 1.2em;
+    }
+    .nav-button {
+        padding: 10px;
+        min-width: 60px;
+        font-size: 0.9em;
+    }
+    .combo {
+        font-size: 1.2em;
+    }
+}
