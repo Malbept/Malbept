@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лапуля App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="main.js"></script>
+    <script src="ui.js"></script>
+    <script src="game.js"></script>
+</head>
+<body>
+    <div id="profile">Загрузка...</div>
+    <div id="content">
+        <div id="sidebar">
+            <button class="action" onclick="showProfile()">Профиль 👤</button>
+            <button class="action" onclick="showPets()">Питомцы 🐾</button>
+            <button class="action" onclick="showCollections()">Коллекции 🧺</button>
+            <button class="action" onclick="showInventory()">Инвентарь 🎒</button>
+            <button class="action" onclick="showShop()">Магазин 🏪</button>
+            <button class="action" onclick="showGames()">Игры 🎲</button>
+            <button class="action" onclick="showRewards()">Награды 🎁</button>
+            <button class="action" onclick="showQuests()">Квесты 📜</button>
+            <button class="action" onclick="showTreasureHunt()">Поиск сокровищ 🔍</button>
+            <button class="action" onclick="showWheel()">Колесо фортуны 🎡</button>
+            <button class="action" onclick="showEarn()">Заработок 💸</button>
+        </div>
+        <div id="main-content">
+            <h2>Добро пожаловать! 🚀</h2>
+            <p>Выбери раздел в меню слева, чтобы начать! 😺</p>
+        </div>
+    </div>
+    <script>
+        // Поддержка тач-событий для мобильных устройств
+        document.querySelectorAll('.action').forEach(button => {
+            button.addEventListener('touchstart', () => button.classList.add('active'));
+            button.addEventListener('touchend', () => button.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>
