@@ -15,5 +15,12 @@ function updateProfile() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Получаем данные пользователя из Telegram Web App
+    const user = window.Telegram.WebApp.initDataUnsafe.user;
+    if (user && user.username) {
+        profile.username = user.username;
+    } else {
+        profile.username = 'User';
+    }
     updateProfile();
 });

@@ -1,6 +1,6 @@
 // ui.js
 let profile = {
-    username: 'пися',
+    username: 'ошибка',
     coins: 100,
     xp: 0,
     rank: 'Новичок',
@@ -22,20 +22,26 @@ function showProfile() {
         <p>Монеты: ${profile.coins} 💰</p>
         <p>Ранг: ${profile.rank}</p>
         <p>Титул: ${profile.title || 'Нет'}</p>
+        <p>Опыт: ${profile.xp} XP</p>
     `;
-    historyStack.push('showProfile');
+    if (!historyStack.includes('showProfile')) {
+        historyStack.push('showProfile');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
 
 function showPets() {
+    const petList = profile.pets.length ? profile.pets.map(pet => `<p>${pet.name} (Уровень ${pet.level})</p>`).join('') : '<p>Нет питомцев</p>';
     document.getElementById('main-content').innerHTML = `
         <button class="back-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Питомцы 🐾</h2>
-        <p>Твои питомцы: ${profile.pets.length ? profile.pets.join(', ') : 'Нет питомцев'}</p>
-        <button class="action" onclick="summonPet()">Призвать питомца</button>
+        ${petList}
+        <button class="action" onclick="summonPet()">Призвать питомца (50 монет)</button>
     `;
-    historyStack.push('showPets');
+    if (!historyStack.includes('showPets')) {
+        historyStack.push('showPets');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -46,7 +52,9 @@ function showCollections() {
         <h2>Коллекции 🧺</h2>
         <p>Твои коллекции: ${profile.items.length ? profile.items.join(', ') : 'Нет предметов'}</p>
     `;
-    historyStack.push('showCollections');
+    if (!historyStack.includes('showCollections')) {
+        historyStack.push('showCollections');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -57,7 +65,9 @@ function showInventory() {
         <h2>Инвентарь 🎒</h2>
         <p>Предметы: ${profile.items.length ? profile.items.join(', ') : 'Инвентарь пуст'}</p>
     `;
-    historyStack.push('showInventory');
+    if (!historyStack.includes('showInventory')) {
+        historyStack.push('showInventory');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -69,10 +79,14 @@ function showShop() {
         <p>Доступные товары:</p>
         <p>Питомец - 100 монет</p>
         <p>Предмет - 50 монет</p>
+        <p>Буст XP (+50%) - 200 монет</p>
         <button class="action" onclick="buyItem('Питомец')">Купить питомца</button>
         <button class="action" onclick="buyItem('Предмет')">Купить предмет</button>
+        <button class="action" onclick="buyItem('Буст XP')">Купить буст XP</button>
     `;
-    historyStack.push('showShop');
+    if (!historyStack.includes('showShop')) {
+        historyStack.push('showShop');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -87,29 +101,38 @@ function showGames() {
         <button class="action" onclick="playRoulette()">Рулетка</button>
         <button class="action" onclick="playClicker()">Кликер</button>
     `;
-    historyStack.push('showGames');
+    if (!historyStack.includes('showGames')) {
+        historyStack.push('showGames');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
 
 function showRewards() {
+    const achievements = profile.achievements.length ? profile.achievements.map(a => `<p>${a}</p>`).join('') : '<p>Нет достижений</p>';
     document.getElementById('main-content').innerHTML = `
         <button class="back-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Награды 🎁</h2>
-        <p>Твои достижения: ${profile.achievements.length ? profile.achievements.join(', ') : 'Нет достижений'}</p>
+        ${achievements}
     `;
-    historyStack.push('showRewards');
+    if (!historyStack.includes('showRewards')) {
+        historyStack.push('showRewards');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
 
 function showQuests() {
+    const questList = Object.keys(profile.quests).length ? Object.entries(profile.quests).map(([id, q]) => `<p>${q.description} (${q.progress}/${q.goal})</p>`).join('') : '<p>Нет квестов</p>';
     document.getElementById('main-content').innerHTML = `
         <button class="back-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Квесты 📜</h2>
-        <p>Активные квесты: ${Object.keys(profile.quests).length ? Object.keys(profile.quests).join(', ') : 'Нет квестов'}</p>
+        ${questList}
+        <button class="action" onclick="startQuest()">Начать новый квест</button>
     `;
-    historyStack.push('showQuests');
+    if (!historyStack.includes('showQuests')) {
+        historyStack.push('showQuests');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -121,7 +144,9 @@ function showTreasureHunt() {
         <p>Найди сокровище!</p>
         <button class="action" onclick="startTreasureHunt()">Начать поиск</button>
     `;
-    historyStack.push('showTreasureHunt');
+    if (!historyStack.includes('showTreasureHunt')) {
+        historyStack.push('showTreasureHunt');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -133,7 +158,9 @@ function showWheel() {
         <p>Крути колесо для наград!</p>
         <button class="action" onclick="spinWheel()">Крутить</button>
     `;
-    historyStack.push('showWheel');
+    if (!historyStack.includes('showWheel')) {
+        historyStack.push('showWheel');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }
@@ -145,7 +172,9 @@ function showEarn() {
         <p>Заработай монеты!</p>
         <button class="action" onclick="earnCoins()">Заработать</button>
     `;
-    historyStack.push('showEarn');
+    if (!historyStack.includes('showEarn')) {
+        historyStack.push('showEarn');
+    }
     window.Telegram.WebApp.BackButton.show();
     updateProfile();
 }

@@ -2,11 +2,14 @@
 body {
     font-family: 'Montserrat', Arial, sans-serif;
     font-weight: 600;
-    background: linear-gradient(135deg, #1a0b2e, #4a001f); /* Добавлен красный оттенок */
+    background: linear-gradient(135deg, #1a0b2e, #4a001f);
     color: #e0e0e0;
     margin: 0;
     overflow-x: hidden;
     animation: fadeIn 1s ease-in;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 #profile {
@@ -21,21 +24,15 @@ body {
     z-index: 10;
 }
 
-#content {
-    display: flex;
-    min-height: calc(100vh - 70px);
-}
-
-#sidebar {
-    width: 200px;
+#banner {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    padding: 15px;
+    padding: 20px;
+    text-align: center;
+    margin: 10px;
+    border-radius: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    flex-shrink: 0;
+    animation: slideIn 0.5s ease-out;
 }
 
 #main-content {
@@ -44,29 +41,44 @@ body {
     backdrop-filter: blur(10px);
     border-radius: 10px;
     padding: 20px;
-    margin: 20px;
+    margin: 10px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     animation: slideIn 0.5s ease-out;
 }
 
+#navbar {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+
 .action {
-    background: linear-gradient(45deg, #ff0066, #ff00ff); /* Красный + фиолетовый */
+    background: linear-gradient(45deg, #ff0066, #ff00ff);
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 10px 15px;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
-    box-shadow: 0 0 15px #ff0066, 0 0 30px #ff00ff;
+    box-shadow: 0 0 10px #ff0066, 0 0 20px #ff00ff;
     transition: transform 0.2s, box-shadow 0.2s;
-    width: 100%;
-    text-align: left;
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
 }
 
 .action:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 20px #ff0066, 0 0 40px #ff00ff;
+    box-shadow: 0 0 15px #ff0066, 0 0 30px #ff00ff;
 }
 
 .action:active {
@@ -74,7 +86,7 @@ body {
 }
 
 .back-button {
-    background: linear-gradient(45deg, #ff0000, #ff0066); /* Ярко-красный */
+    background: linear-gradient(45deg, #ff0000, #ff0066);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -92,7 +104,7 @@ body {
 }
 
 h2 {
-    color: #ff0066; /* Красный заголовок */
+    color: #ff0066;
     text-shadow: 0 0 10px #ff0066;
     font-weight: 700;
     margin-bottom: 20px;
@@ -150,21 +162,12 @@ body::before {
 }
 
 @media (max-width: 600px) {
-    #content {
-        flex-direction: column;
-    }
-    #sidebar {
-        width: 100%;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
     .action {
-        width: auto;
-        padding: 10px;
-        font-size: 14px;
+        padding: 8px;
+        font-size: 12px;
+        min-width: 60px;
     }
-    #main-content {
-        margin: 10px;
+    #banner, #main-content {
+        margin: 5px;
     }
 }

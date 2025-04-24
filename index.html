@@ -13,25 +13,27 @@
 </head>
 <body>
     <div id="profile">Загрузка...</div>
-    <div id="content">
-        <div id="sidebar">
-            <button class="action" onclick="showProfile()">Профиль 👤</button>
-            <button class="action" onclick="showPets()">Питомцы 🐾</button>
-            <button class="action" onclick="showCollections()">Коллекции 🧺</button>
-            <button class="action" onclick="showInventory()">Инвентарь 🎒</button>
-            <button class="action" onclick="showShop()">Магазин 🏪</button>
-            <button class="action" onclick="showGames()">Игры 🎲</button>
-            <button class="action" onclick="showRewards()">Награды 🎁</button>
-            <button class="action" onclick="showQuests()">Квесты 📜</button>
-            <button class="action" onclick="showTreasureHunt()">Поиск сокровищ 🔍</button>
-            <button class="action" onclick="showWheel()">Колесо фортуны 🎡</button>
-            <button class="action" onclick="showEarn()">Заработок 💸</button>
-        </div>
-        <div id="main-content">
-            <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
-            <h2>Добро пожаловать! 🚀</h2>
-            <p>Выбери раздел в меню слева, чтобы начать! 😺</p>
-        </div>
+    <div id="banner">
+        <h2>Лапуля App 🐾</h2>
+        <p>Играй, собирай питомцев и побеждай! 🚀</p>
+    </div>
+    <div id="main-content">
+        <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+        <h2>Добро пожаловать! 🚀</h2>
+        <p>Выбери раздел в меню снизу, чтобы начать! 😺</p>
+    </div>
+    <div id="navbar">
+        <button class="action" onclick="showProfile()">Профиль 👤</button>
+        <button class="action" onclick="showPets()">Питомцы 🐾</button>
+        <button class="action" onclick="showCollections()">Коллекции 🧺</button>
+        <button class="action" onclick="showInventory()">Инвентарь 🎒</button>
+        <button class="action" onclick="showShop()">Магазин 🏪</button>
+        <button class="action" onclick="showGames()">Игры 🎲</button>
+        <button class="action" onclick="showRewards()">Награды 🎁</button>
+        <button class="action" onclick="showQuests()">Квесты 📜</button>
+        <button class="action" onclick="showTreasureHunt()">Поиск 🔍</button>
+        <button class="action" onclick="showWheel()">Колесо 🎡</button>
+        <button class="action" onclick="showEarn()">Заработок 💸</button>
     </div>
     <script>
         let historyStack = ['main'];
@@ -60,7 +62,7 @@
             document.getElementById('main-content').innerHTML = `
                 <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
                 <h2>Добро пожаловать! 🚀</h2>
-                <p>Выбери раздел в меню слева, чтобы начать! 😺</p>
+                <p>Выбери раздел в меню снизу, чтобы начать! 😺</p>
             `;
             historyStack = ['main'];
             window.Telegram.WebApp.BackButton.hide();
