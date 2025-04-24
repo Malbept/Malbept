@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лапуля App</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="main.js"></script>
     <script src="ui.js"></script>
@@ -28,16 +28,42 @@
             <button class="action" onclick="showEarn()">Заработок 💸</button>
         </div>
         <div id="main-content">
+            <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
             <h2>Добро пожаловать! 🚀</h2>
             <p>Выбери раздел в меню слева, чтобы начать! 😺</p>
         </div>
     </div>
     <script>
-        // Поддержка тач-событий для мобильных устройств
+        // Поддержка тач-событий и аппаратной кнопки "Назад"
+        let historyStack = ['main'];
         document.querySelectorAll('.action').forEach(button => {
             button.addEventListener('touchstart', () => button.classList.add('active'));
             button.addEventListener('touchend', () => button.classList.remove('active'));
         });
+        window.Telegram.WebApp.onEvent('backButtonClicked', goBack);
+        window.Telegram.WebApp.BackButton.show();
+
+        function goBack() {
+            if (historyStack.length > 1) {
+                historyStack.pop();
+                let lastSection = historyStack[historyStack.length - 1];
+                if (lastSection === 'main') {
+                    showMain();
+                } else {
+                    window[lastSection]();
+                }
+            }
+        }
+
+        function showMain() {
+            document.getElementById('main-content').innerHTML = `
+                <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+                <h2>Добро пожаловать! 🚀</h2>
+                <p>Выбери раздел в меню слева, чтобы начать! 😺</p>
+            `;
+            historyStack = ['main'];
+            window.Telegram.WebApp.BackButton.hide();
+        }
     </script>
 </body>
 </html>
