@@ -34,24 +34,25 @@
         </div>
     </div>
     <script>
-        // Поддержка тач-событий и аппаратной кнопки "Назад"
         let historyStack = ['main'];
         document.querySelectorAll('.action').forEach(button => {
             button.addEventListener('touchstart', () => button.classList.add('active'));
             button.addEventListener('touchend', () => button.classList.remove('active'));
         });
         window.Telegram.WebApp.onEvent('backButtonClicked', goBack);
-        window.Telegram.WebApp.BackButton.show();
+        window.Telegram.WebApp.BackButton.hide();
 
         function goBack() {
             if (historyStack.length > 1) {
                 historyStack.pop();
-                let lastSection = historyStack[historyStack.length - 1];
+                const lastSection = historyStack[historyStack.length - 1];
                 if (lastSection === 'main') {
                     showMain();
                 } else {
                     window[lastSection]();
                 }
+            } else {
+                showMain();
             }
         }
 
@@ -63,6 +64,7 @@
             `;
             historyStack = ['main'];
             window.Telegram.WebApp.BackButton.hide();
+            updateProfile();
         }
     </script>
 </body>

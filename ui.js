@@ -1,6 +1,6 @@
 // ui.js
 let profile = {
-    username: 'User',
+    username: 'пися',
     coins: 100,
     xp: 0,
     rank: 'Новичок',
@@ -25,6 +25,7 @@ function showProfile() {
     `;
     historyStack.push('showProfile');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showPets() {
@@ -36,6 +37,7 @@ function showPets() {
     `;
     historyStack.push('showPets');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showCollections() {
@@ -46,6 +48,7 @@ function showCollections() {
     `;
     historyStack.push('showCollections');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showInventory() {
@@ -56,18 +59,22 @@ function showInventory() {
     `;
     historyStack.push('showInventory');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showShop() {
     document.getElementById('main-content').innerHTML = `
         <button class="back-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Магазин 🏪</h2>
-        <p>Доступные товары: Питомец (100 монет), Предмет (50 монет)</p>
+        <p>Доступные товары:</p>
+        <p>Питомец - 100 монет</p>
+        <p>Предмет - 50 монет</p>
         <button class="action" onclick="buyItem('Питомец')">Купить питомца</button>
         <button class="action" onclick="buyItem('Предмет')">Купить предмет</button>
     `;
     historyStack.push('showShop');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showGames() {
@@ -82,6 +89,7 @@ function showGames() {
     `;
     historyStack.push('showGames');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showRewards() {
@@ -92,6 +100,7 @@ function showRewards() {
     `;
     historyStack.push('showRewards');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showQuests() {
@@ -102,6 +111,7 @@ function showQuests() {
     `;
     historyStack.push('showQuests');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showTreasureHunt() {
@@ -113,6 +123,7 @@ function showTreasureHunt() {
     `;
     historyStack.push('showTreasureHunt');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showWheel() {
@@ -124,6 +135,7 @@ function showWheel() {
     `;
     historyStack.push('showWheel');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showEarn() {
@@ -135,6 +147,7 @@ function showEarn() {
     `;
     historyStack.push('showEarn');
     window.Telegram.WebApp.BackButton.show();
+    updateProfile();
 }
 
 function showNotification(message) {
