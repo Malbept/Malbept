@@ -3,18 +3,19 @@ let profile = {
     energy: 20,
     maxEnergy: 20,
     items: [],
-    theme: 'default', // Добавляем тему по умолчанию
-    casinoRig: {}, // Для подкрутки казино
+    theme: 'default',
+    casinoRig: {},
     quests: [],
     seasonProgress: 0,
-    level: 1
+    level: 1,
+    pets: [], // Массив питомцев
+    username: 'Аноним'
 };
 
 function loadProfile() {
     const savedProfile = localStorage.getItem('lapulya_profile');
     if (savedProfile) {
         profile = JSON.parse(savedProfile);
-        // Устанавливаем тему при загрузке
         applyTheme();
     }
 }
@@ -32,3 +33,17 @@ function updateEnergy() {
         updateProfile();
     }
 }
+
+// Пассивный доход от питомцев
+function updatePetIncome() {
+    profile.pets.forEach(pet => {
+        if (pet.level > 0) {
+            const income = pet.level * 5; // 5 монет за уровень каждые 5 минут
+            profile.coins += income;
+            showNotification(`Питомец ${pet.name} принёс ${income} монет! 🐾`);
+        }
+    });
+    updateProfile();
+}
+
+setInterval(updatePetIncome, 300000); // Каждые 5 минут

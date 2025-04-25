@@ -71,6 +71,8 @@
     <script src="game-mini.js"></script>
     <script src="game-special.js"></script>
     <script src="social.js"></script>
+    <script src="pets.js"></script>
+    <script src="events.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.Telegram.WebApp.ready();
@@ -89,7 +91,7 @@
             if (typeof loadProfile === 'function') {
                 loadProfile();
                 updateProfile();
-                applyTheme(); // Применяем тему при загрузке
+                applyTheme();
             } else {
                 console.error('loadProfile is not defined. Check if core.js is loaded correctly.');
                 document.getElementById('profile').innerText = 'Ошибка загрузки профиля.';
@@ -118,46 +120,4 @@
             document.querySelectorAll('.action').forEach(button => {
                 button.addEventListener('touchstart', () => button.classList.add('active'));
                 button.addEventListener('touchend', () => button.classList.remove('active'));
-                button.addEventListener('click', () => {
-                    const action = button.getAttribute('data-action');
-                    if (action && window[action]) {
-                        window[action]();
-                    } else {
-                        console.error(`Function ${action} is not defined.`);
-                    }
-                });
-            });
-
-            window.goBack = function() {
-                if (historyStack.length > 1) {
-                    historyStack.pop();
-                    const lastSection = historyStack[historyStack.length - 1];
-                    if (lastSection === 'main') {
-                        showMain();
-                    } else if (window[lastSection]) {
-                        window[lastSection]();
-                    }
-                } else {
-                    showMain();
-                }
-            };
-
-            if (typeof updateEnergy === 'function') {
-                setInterval(updateEnergy, 1000);
-            } else {
-                console.error('updateEnergy is not defined. Check if core.js is loaded correctly.');
-            }
-
-            const mainContent = document.getElementById('main-content');
-            const navBars = document.querySelectorAll('.nav-bar');
-            mainContent.addEventListener('scroll', () => {
-                const scrollTop = mainContent.scrollTop;
-                const opacity = Math.max(0, 1 - scrollTop / 100);
-                navBars.forEach(bar => {
-                    bar.style.opacity = opacity;
-                });
-            });
-        });
-    </script>
-</body>
-</html>
+                button.add

@@ -8,19 +8,44 @@ function sendCommand(command) {
 }
 
 function updateProfile() {
-    document.getElementById('profile').innerHTML = `
-        <p>Имя: ${profile.username}</p>
-        <p>Монеты: ${profile.coins} 💰</p>
-    `;
+    const profileDiv = document.getElementById('profile');
+    if (profileDiv) {
+        profileDiv.innerHTML = `
+            <p>Имя: ${profile.username}</p>
+            <p>Монеты: ${profile.coins} 💰</p>
+            <p>Энергия: ${profile.energy}/${profile.maxEnergy} ⚡</p>
+        `;
+    }
+    saveProfile();
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Получаем данные пользователя из Telegram Web App
     const user = window.Telegram.WebApp.initDataUnsafe.user;
     if (user && user.username) {
         profile.username = user.username;
     } else {
         profile.username = 'User';
     }
-    updateProfile();
+
+    // Пасхалка: 10 кликов по баннеру
+    let bannerClicks = 0;
+    const banner = document.getElementById('banner');
+    if (banner) {
+        banner.addEventListener('click', () => {
+            bannerClicks++;
+            if (bannerClicks >= 10) {
+                profile.coins += 100;
+                showNotification('Секретная награда! +100 монет 🎉');
+                bannerClicks = 0;
+                updateProfile();
+            }
+        });
+    }
+
+    // Проверяем наличие функции updateEnergy
+    if (typeof updateEnergy === 'function') {
+        setInterval(updateEnergy, 1000); // Обновление энергии каждую секунду
+    } else {
+        console.error('updateEnergy is not defined. Check if ui.js is loaded correctly.');
+    }
 });
