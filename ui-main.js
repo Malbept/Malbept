@@ -148,6 +148,11 @@ function showOther() {
         <button class="action glass-button" onclick="changeTheme('purple')">Фиолетовая тема</button>
         <button class="action glass-button" onclick="changeTheme('dark')">Тёмная тема</button>
         <button class="action glass-button" onclick="changeTheme('green')">Зелёная тема</button>
+        <button class="action glass-button" onclick="changeTheme('orange')">Оранжевая тема</button>
+        <button class="action glass-button" onclick="changeTheme('cyan')">Циановая тема</button>
+        <button class="action glass-button" onclick="changeTheme('pink')">Розовая тема</button>
+        <button class="action glass-button" onclick="changeTheme('teal')">Бирюзовая тема</button>
+        <button class="action glass-button" onclick="changeTheme('gold')">Золотая тема</button>
     `;
     if (!historyStack.includes('showOther')) {
         historyStack.push('showOther');
@@ -159,7 +164,7 @@ function showOther() {
 function changeTheme(theme) {
     profile.theme = theme;
     applyTheme();
-    showNotification(`Тема изменена на ${theme === 'default' ? 'стоковую' : theme === 'red' ? 'красную' : theme === 'blue' ? 'синюю' : theme === 'purple' ? 'фиолетовую' : theme === 'dark' ? 'тёмную' : 'зелёную'}! 🎨`);
+    showNotification(`Тема изменена на ${theme === 'default' ? 'стоковую' : theme === 'red' ? 'красную' : theme === 'blue' ? 'синюю' : theme === 'purple' ? 'фиолетовую' : theme === 'dark' ? 'тёмную' : theme === 'green' ? 'зелёную' : theme === 'orange' ? 'оранжевую' : theme === 'cyan' ? 'циановую' : theme === 'pink' ? 'розовую' : theme === 'teal' ? 'бирюзовую' : 'золотую'}! 🎨`);
     showOther();
     updateProfile();
 }

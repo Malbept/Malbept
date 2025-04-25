@@ -65,6 +65,61 @@ body.green-theme {
     --banner-bg: linear-gradient(45deg, #28a745, #20c997);
 }
 
+body.orange-theme {
+    --background-gradient: linear-gradient(135deg, #ff9f43 0%, #feca57 100%);
+    --text-color: #333;
+    --header-color: #333;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(255, 255, 255, 0.3);
+    --glass-active-bg: rgba(255, 255, 255, 0.4);
+    --profile-bg: rgba(255, 255, 255, 0.2);
+    --banner-bg: linear-gradient(45deg, #ff6b6b, #ee5253);
+}
+
+body.cyan-theme {
+    --background-gradient: linear-gradient(135deg, #0abde3 0%, #48dbfb 100%);
+    --text-color: #fff;
+    --header-color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #00cec9, #54a0ff);
+}
+
+body.pink-theme {
+    --background-gradient: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);
+    --text-color: #333;
+    --header-color: #333;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(255, 255, 255, 0.3);
+    --glass-active-bg: rgba(255, 255, 255, 0.4);
+    --profile-bg: rgba(255, 255, 255, 0.2);
+    --banner-bg: linear-gradient(45deg, #ff6b6b, #feca57);
+}
+
+body.teal-theme {
+    --background-gradient: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
+    --text-color: #fff;
+    --header-color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #00b894, #55efc4);
+}
+
+body.gold-theme {
+    --background-gradient: linear-gradient(135deg, #ffd60a 0%, #ffaa00 100%);
+    --text-color: #333;
+    --header-color: #333;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(255, 255, 255, 0.3);
+    --glass-active-bg: rgba(255, 255, 255, 0.4);
+    --profile-bg: rgba(255, 255, 255, 0.2);
+    --banner-bg: linear-gradient(45deg, #d4a017, #feca57);
+}
+
 body {
     margin: 0;
     font-family: 'Poppins', sans-serif;
@@ -98,18 +153,19 @@ p {
     backdrop-filter: blur(10px);
     border-radius: 15px;
     margin: 5px;
+    z-index: 1000; /* Увеличиваем z-index, чтобы панели были поверх контента */
 }
 
 #top-bar {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 1000;
 }
 
 #bottom-bar {
     position: sticky;
     bottom: 0;
-    z-index: 100;
+    z-index: 1000;
     flex-wrap: nowrap;
     overflow-x: auto;
 }
@@ -124,6 +180,7 @@ p {
     padding: 10px;
     background: var(--glass-bg);
     backdrop-filter: blur(10px);
+    z-index: 1000;
 }
 
 #side-bar-left {
@@ -140,6 +197,7 @@ p {
     border-radius: 10px;
     margin: 5px;
     font-size: 16px;
+    z-index: 500; /* Меньше, чем у панелей, но больше, чем у контента */
 }
 
 #banner {
@@ -150,6 +208,7 @@ p {
     border-radius: 15px;
     margin: 5px;
     cursor: pointer;
+    z-index: 500;
 }
 
 #banner h2 {
@@ -165,7 +224,9 @@ p {
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    margin-bottom: 60px;
+    margin-top: 80px; /* Увеличиваем отступ сверху */
+    margin-bottom: 80px; /* Увеличиваем отступ снизу */
+    z-index: 100; /* Устанавливаем z-index ниже панелей */
 }
 
 .glass-button {
@@ -184,6 +245,7 @@ p {
     align-items: center;
     gap: 5px;
     white-space: nowrap;
+    z-index: 1100; /* Кнопки поверх всего */
 }
 
 .glass-button:hover {
@@ -213,7 +275,7 @@ p {
     color: white;
     padding: 10px 20px;
     border-radius: 10px;
-    z-index: 1000;
+    z-index: 2000; /* Уведомления поверх всего */
 }
 
 input {
@@ -225,6 +287,7 @@ input {
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
+    z-index: 600;
 }
 
 @media (min-width: 768px) {
@@ -239,6 +302,8 @@ input {
     #main-content {
         margin-left: 220px;
         margin-right: 220px;
+        margin-top: 20px; /* Меньший отступ для ПК */
+        margin-bottom: 20px;
     }
 
     #bottom-bar .mobile-only {
@@ -255,5 +320,10 @@ input {
     .glass-button {
         font-size: 14px;
         padding: 8px 15px;
+    }
+
+    #main-content {
+        margin-top: 100px; /* Ещё больше отступа для мобильных */
+        margin-bottom: 100px;
     }
 }
