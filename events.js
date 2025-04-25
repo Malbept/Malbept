@@ -1,72 +1,37 @@
-function showTreasureHunt() {
-    if (!profile.currentEvent) {
-        profile.currentEvent = {
-            name: "Охота за сокровищами",
+function startEvent() {
+    if (!profile.event) {
+        profile.event = {
+            description: 'Весенний марафон',
             progress: 0,
-            goal: 10,
-            rewards: [
-                { type: "coins", value: 100 },
-                { type: "item", value: "Сокровище" },
-                { type: "item", value: "Редкий артефакт" }
-            ]
+            goal: 100,
+            endTime: Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 дней
         };
-    }
-
-    document.getElementById('main-content').innerHTML = `
-        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
-        <h2>Охота за сокровищами 🔍</h2>
-        <p>Копай и находи сокровища!</p>
-        <p>Прогресс: ${profile.currentEvent.progress}/${profile.currentEvent.goal}</p>
-        <button class="action glass-button" onclick="digForTreasure()">Копать (5 энергии)</button>
-        ${profile.currentEvent.progress >= profile.currentEvent.goal ? `
-            <button class="action glass-button" onclick="claimEventReward()">Забрать награду 🏆</button>
-        ` : ''}
-    `;
-    if (!historyStack.includes('showTreasureHunt')) {
-        historyStack.push('showTreasureHunt');
-    }
-    updateProfile();
-    applyTheme();
-}
-
-function digForTreasure() {
-    if (profile.energy >= 5) {
-        profile.energy -= 5;
-        profile.currentEvent.progress += 1;
-
-        const chance = Math.random();
-        if (chance > 0.9) {
-            profile.coins += 50;
-            showNotification('Ты нашёл клад! +50 монет! 💰');
-        } else if (chance > 0.6) {
-            profile.items.push('Маленькое сокровище');
-            showNotification('Ты нашёл Маленькое сокровище! 🧳');
-        } else {
-            showNotification('Ничего не нашёл... Продолжай копать! 🔍');
-        }
-
-        if (profile.currentEvent.progress >= profile.currentEvent.goal) {
-            showNotification('Событие завершено! Забери награду! 🏆');
-        }
-
-        showTreasureHunt();
+        showNotification('Новое событие начато: Весенний марафон! 🎉');
         updateProfile();
-    } else {
-        showNotification('Недостаточно энергии! ⚡');
     }
 }
 
-function claimEventReward() {
-    profile.currentEvent.rewards.forEach(reward => {
-        if (reward.type === "coins") {
-            profile.coins += reward.value;
-            showNotification(`Награда: +${reward.value} монет! 💰`);
-        } else if (reward.type === "item") {
-            profile.items.push(reward.value);
-            showNotification(`Награда: ${reward.value}! 🧳`);
+// Проверка окончания события
+function checkEventEnd() {
+    if (profile.event && Date.now() > profile.event.endTime) {
+        if (profile.event.progress >= profile.event.goal) {
+            profile.coins += 500;
+            profile.items.push('Событийный трофей');
+            showNotification('Событие завершено! +500 монет и Событийный трофей 🏆');
+        } else {
+            showNotification('Событие закончилось, но ты не выполнил цель. 😔');
         }
-    });
-    profile.currentEvent = null;
-    showTreasureHunt();
-    updateProfile();
+        profile.event = null;
+        updateProfile();
+    }
 }
+
+// Проверяем каждую минуту
+setInterval(checkEventEnd, 60000);
+
+// Начинаем событие при загрузке, если его нет
+document.addEventListener('DOMContentLoaded', () => {
+    if (!profile.event) {
+        startEvent();
+    }
+});

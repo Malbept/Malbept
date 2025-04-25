@@ -84,13 +84,11 @@
 
     <!-- Нижняя панель с кнопками -->
     <div id="bottom-bar" class="nav-bar">
-        <button class="action glass-button" data-action="showQuests">Квесты 📜</button>
         <button class="action glass-button" data-action="showTreasureHunt">Поиск 🔍</button>
         <button class="action glass-button" data-action="showWheel">Колесо 🎡</button>
-        <button class="action glass-button" data-action="showEarn">Заработок 💸</button>
-        <button class="action glass-button" data-action="showFriends">Друзья 👥</button>
         <button class="action glass-button" data-action="showTournaments">Турниры 🏆</button>
         <button class="action glass-button" data-action="showSeasonPass">Пропуск 🎟️</button>
+        <button class="action glass-button" data-action="showSecrets">Секреты 🔒</button>
         <!-- Кнопки из боковых панелей для мобильных -->
         <button class="action glass-button mobile-only" data-action="showInventory">Инвентарь 🎒</button>
         <button class="action glass-button mobile-only" data-action="showShop">Магазин 🏪</button>
@@ -116,13 +114,11 @@
     <script src="inventory.js"></script>
     <script src="settings.js"></script>
     <script src="admin.js"></script>
-    <script src="quests.js"></script>
-    <script src="earn.js"></script>
     <script src="shop.js"></script>
-    <script src="friends.js"></script>
     <script src="rewards.js"></script>
     <script src="season.js"></script>
     <script src="tournaments.js"></script>
+    <script src="secrets.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.Telegram.WebApp.ready();
@@ -142,6 +138,7 @@
                 loadProfile();
                 updateProfile();
                 applyTheme();
+                calculateOfflineEarnings(); // Проверяем оффлайн-доход
             } else {
                 console.error('loadProfile is not defined. Check if core.js is loaded correctly.');
                 document.getElementById('profile').innerText = 'Ошибка загрузки профиля.';
@@ -161,6 +158,7 @@
                     if (bannerClicks >= 10) {
                         profile.coins += 100;
                         showNotification('Секретная награда! +100 монет 🎉');
+                        checkSecret('banner_clicks'); // Проверяем секрет
                         bannerClicks = 0;
                         updateProfile();
                     }
@@ -195,7 +193,7 @@
             const navBars = document.querySelectorAll('.nav-bar');
             mainContent.addEventListener('scroll', () => {
                 const scrollTop = mainContent.scrollTop;
-                const opacity = Math.max(0, 1 - scrollTop / 100);
+                const opacity = Math.max|b(0, 1 - scrollTop / 100);
                 navBars.forEach(bar => {
                     bar.style.opacity = opacity;
                 });

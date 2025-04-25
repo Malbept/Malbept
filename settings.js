@@ -1,9 +1,10 @@
+profile.themeChangeCount = profile.themeChangeCount || 0;
+
 function showOther() {
     document.getElementById('main-content').innerHTML = `
         <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Другое ⚙️</h2>
         <p>Дополнительные функции</p>
-        <button class="action glass-button" onclick="resetProgress()">Сбросить прогресс</button>
         <button class="action glass-button" onclick="showAdminPanel()" style="opacity: 0.1;">🔧</button>
         <h3>Смена темы 🎨</h3>
         <button class="action glass-button" onclick="changeTheme('default')">Стоковая тема</button>
@@ -27,16 +28,12 @@ function showOther() {
 
 function changeTheme(theme) {
     profile.theme = theme;
+    profile.themeChangeCount++;
+    if (profile.themeChangeCount >= 3) {
+        checkSecret('change_theme_3');
+    }
     applyTheme();
     showNotification(`Тема изменена на ${theme === 'default' ? 'стоковую' : theme === 'red' ? 'красную' : theme === 'blue' ? 'синюю' : theme === 'purple' ? 'фиолетовую' : theme === 'dark' ? 'тёмную' : theme === 'green' ? 'зелёную' : theme === 'orange' ? 'оранжевую' : theme === 'cyan' ? 'циановую' : theme === 'pink' ? 'розовую' : theme === 'teal' ? 'бирюзовую' : 'золотую'}! 🎨`);
     showOther();
     updateProfile();
-}
-
-function resetProgress() {
-    if (confirm('Вы уверены, что хотите сбросить прогресс? Это действие нельзя отменить!')) {
-        localStorage.removeItem('lapulya_profile');
-        showNotification('Прогресс сброшен! Перезагрузите страницу.');
-        showOther();
-    }
 }

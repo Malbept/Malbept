@@ -20,6 +20,7 @@ function useEnergyDrink() {
     if (index !== -1) {
         profile.items.splice(index, 1);
         profile.energy = profile.maxEnergy;
+        checkSecret('use_energy_drink'); // Проверяем секрет
         showNotification('Энергия полностью восстановлена! ⚡');
         showInventory();
         updateProfile();

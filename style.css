@@ -1,329 +1,302 @@
-:root {
-    --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    --text-color: #333;
-    --header-color: #2c3e50;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-hover-bg: rgba(255, 255, 255, 0.3);
-    --glass-active-bg: rgba(255, 255, 255, 0.4);
-    --profile-bg: rgba(255, 255, 255, 0.2);
-    --banner-bg: linear-gradient(45deg, #ff6f61, #de6262);
-    --banner-text-color: white;
-}
-
-body.red-theme {
-    --background-gradient: linear-gradient(135deg, #ff6f61 0%, #de6262 100%);
-    --text-color: #fff;
-    --header-color: #fff;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #e74c3c, #c0392b);
-}
-
-body.blue-theme {
-    --background-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --text-color: #fff;
-    --header-color: #fff;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #1e90ff, #00b7eb);
-}
-
-body.purple-theme {
-    --background-gradient: linear-gradient(135deg, #a445b2 0%, #d41872 100%);
-    --text-color: #fff;
-    --header-color: #fff;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #8a2be2, #ff00ff);
-}
-
-body.dark-theme {
-    --background-gradient: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
-    --text-color: #ecf0f1;
-    --header-color: #ecf0f1;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #34495e, #2c3e50);
-}
-
-body.green-theme {
-    --background-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    --text-color: #333;
-    --header-color: #333;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-hover-bg: rgba(255, 255, 255, 0.3);
-    --glass-active-bg: rgba(255, 255, 255, 0.4);
-    --profile-bg: rgba(255, 255, 255, 0.2);
-    --banner-bg: linear-gradient(45deg, #28a745, #20c997);
-}
-
-body.orange-theme {
-    --background-gradient: linear-gradient(135deg, #ff9f43 0%, #feca57 100%);
-    --text-color: #333;
-    --header-color: #333;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-hover-bg: rgba(255, 255, 255, 0.3);
-    --glass-active-bg: rgba(255, 255, 255, 0.4);
-    --profile-bg: rgba(255, 255, 255, 0.2);
-    --banner-bg: linear-gradient(45deg, #ff6b6b, #ee5253);
-}
-
-body.cyan-theme {
-    --background-gradient: linear-gradient(135deg, #0abde3 0%, #48dbfb 100%);
-    --text-color: #fff;
-    --header-color: #fff;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #00cec9, #54a0ff);
-}
-
-body.pink-theme {
-    --background-gradient: linear-gradient(135deg, #ff9ff3 0%, #feca57 100%);
-    --text-color: #333;
-    --header-color: #333;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-hover-bg: rgba(255, 255, 255, 0.3);
-    --glass-active-bg: rgba(255, 255, 255, 0.4);
-    --profile-bg: rgba(255, 255, 255, 0.2);
-    --banner-bg: linear-gradient(45deg, #ff6b6b, #feca57);
-}
-
-body.teal-theme {
-    --background-gradient: linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%);
-    --text-color: #fff;
-    --header-color: #fff;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-hover-bg: rgba(255, 255, 255, 0.2);
-    --glass-active-bg: rgba(255, 255, 255, 0.3);
-    --profile-bg: rgba(255, 255, 255, 0.1);
-    --banner-bg: linear-gradient(45deg, #00b894, #55efc4);
-}
-
-body.gold-theme {
-    --background-gradient: linear-gradient(135deg, #ffd60a 0%, #ffaa00 100%);
-    --text-color: #333;
-    --header-color: #333;
-    --glass-bg: rgba(255, 255, 255, 0.2);
-    --glass-hover-bg: rgba(255, 255, 255, 0.3);
-    --glass-active-bg: rgba(255, 255, 255, 0.4);
-    --profile-bg: rgba(255, 255, 255, 0.2);
-    --banner-bg: linear-gradient(45deg, #d4a017, #feca57);
-}
-
+/* Базовые стили */
 body {
     margin: 0;
+    padding: 0;
     font-family: 'Poppins', sans-serif;
-    background: var(--background-gradient);
-    color: var(--text-color);
+    color: #e0e0e0;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
 }
 
-h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    color: var(--header-color);
-    margin: 10px 0;
+/* Основной контент */
+#main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    text-align: center;
+    scrollbar-width: none;
+}
+#main-content::-webkit-scrollbar {
+    display: none;
 }
 
-p {
-    margin: 5px 0;
-    font-size: 16px;
+/* Баннер */
+#banner {
+    text-align: center;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin: 5px;
 }
 
+/* Профиль */
+#profile {
+    text-align: center;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    margin: 5px;
+}
+
+/* Панели навигации */
 .nav-bar {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding: 10px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
+    gap: 5px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
     margin: 5px;
-    z-index: 1000; /* Увеличиваем z-index, чтобы панели были поверх контента */
-}
-
-#top-bar {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-#bottom-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 1000;
-    flex-wrap: nowrap;
     overflow-x: auto;
+    scrollbar-width: none;
 }
-
+.nav-bar::-webkit-scrollbar {
+    display: none;
+}
+#top-bar {
+    justify-content: center;
+}
+#bottom-bar {
+    justify-content: space-around;
+}
 #side-bar-left, #side-bar-right {
     display: none;
     flex-direction: column;
-    width: 200px;
+    width: 150px;
     position: fixed;
     top: 0;
     bottom: 0;
     padding: 10px;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
 }
 
-#side-bar-left {
-    left: 0;
-}
-
-#side-bar-right {
-    right: 0;
-}
-
-#profile {
-    padding: 10px;
-    background: var(--profile-bg);
-    border-radius: 10px;
-    margin: 5px;
-    font-size: 16px;
-    z-index: 500; /* Меньше, чем у панелей, но больше, чем у контента */
-}
-
-#banner {
-    text-align: center;
-    padding: 15px;
-    background: var(--banner-bg);
-    color: var(--banner-text-color);
-    border-radius: 15px;
-    margin: 5px;
-    cursor: pointer;
-    z-index: 500;
-}
-
-#banner h2 {
-    margin: 0;
-    color: var(--banner-text-color);
-}
-
-#banner p {
-    margin: 5px 0;
-}
-
-#main-content {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    margin-top: 80px; /* Увеличиваем отступ сверху */
-    margin-bottom: 80px; /* Увеличиваем отступ снизу */
-    z-index: 100; /* Устанавливаем z-index ниже панелей */
-}
-
+/* Кнопки */
 .glass-button {
-    background: var(--glass-bg);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 16px;
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 8px 15px;
+    color: #e0e0e0;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
     cursor: pointer;
+    transition: all 0.3s ease;
     backdrop-filter: blur(5px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    transition: transform 0.1s, background 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-    z-index: 1100; /* Кнопки поверх всего */
+    -webkit-backdrop-filter: blur(5px);
 }
-
 .glass-button:hover {
-    background: var(--glass-hover-bg);
+    background: rgba(255, 255, 255, 0.2);
 }
-
 .glass-button:active, .glass-button.active {
+    background: rgba(255, 255, 255, 0.3);
     transform: scale(0.95);
-    background: var(--glass-active-bg);
 }
-
-.action {
-    width: auto;
-    margin: 5px;
-}
-
 .back-button {
-    margin-bottom: 10px;
+    display: block;
+    margin: 10px auto;
 }
 
+/* Уведомления */
 .notification {
     position: fixed;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.8);
-    color: white;
+    color: #fff;
     padding: 10px 20px;
     border-radius: 10px;
-    z-index: 2000; /* Уведомления поверх всего */
+    z-index: 1000;
+    animation: fadeInOut 3s forwards;
+}
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
 }
 
-input {
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 600;
+/* Адаптивность */
+@media (max-width: 600px) {
+    .mobile-only {
+        display: inline-block;
+    }
+    #side-bar-left, #side-bar-right {
+        display: none;
+    }
+    .glass-button {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 601px) and (max-width: 1024px) {
     body {
         flex-direction: row;
     }
-
-    #side-bar-left, #side-bar-right {
+    #side-bar-left {
         display: flex;
+        left: 0;
     }
-
-    #main-content {
-        margin-left: 220px;
-        margin-right: 220px;
-        margin-top: 20px; /* Меньший отступ для ПК */
-        margin-bottom: 20px;
+    #side-bar-right {
+        display: flex;
+        right: 0;
     }
-
-    #bottom-bar .mobile-only {
+    .mobile-only {
         display: none;
     }
-}
-
-@media (max-width: 767px) {
-    #bottom-bar {
-        display: flex;
-        gap: 5px;
+    #main-content, #banner, #profile {
+        margin: 5px 160px;
     }
-
     .glass-button {
         font-size: 14px;
         padding: 8px 15px;
     }
+}
 
-    #main-content {
-        margin-top: 100px; /* Ещё больше отступа для мобильных */
-        margin-bottom: 100px;
+@media (min-width: 1025px) {
+    body {
+        flex-direction: row;
     }
+    #side-bar-left {
+        display: flex;
+        left: 0;
+    }
+    #side-bar-right {
+        display: flex;
+        right: 0;
+    }
+    .mobile-only {
+        display: none;
+    }
+    #main-content, #banner, #profile {
+        margin: 5px 160px;
+    }
+    .glass-button {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+}
+
+/* Темы */
+body.dark-theme {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+body.dark-theme .glass-button {
+    border-color: #00ffcc;
+    color: #00ffcc;
+}
+body.dark-theme .glass-button:hover {
+    background: rgba(0, 255, 204, 0.2);
+}
+
+body.red-theme {
+    background: linear-gradient(135deg, #2e1a1a 0%, #3e1616 100%);
+}
+body.red-theme .glass-button {
+    border-color: #ff6666;
+    color: #ff9999;
+}
+body.red-theme .glass-button:hover {
+    background: rgba(255, 102, 102, 0.2);
+}
+
+body.blue-theme {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16163e 100%);
+}
+body.blue-theme .glass-button {
+    border-color: #6666ff;
+    color: #9999ff;
+}
+body.blue-theme .glass-button:hover {
+    background: rgba(102, 102, 255, 0.2);
+}
+
+body.purple-theme {
+    background: linear-gradient(135deg, #2e1a2e 0%, #3e163e 100%);
+}
+body.purple-theme .glass-button {
+    border-color: #cc66ff;
+    color: #e699ff;
+}
+body.purple-theme .glass-button:hover {
+    background: rgba(204, 102, 255, 0.2);
+}
+
+body.green-theme {
+    background: linear-gradient(135deg, #1a2e1a 0%, #163e16 100%);
+}
+body.green-theme .glass-button {
+    border-color: #66ff66;
+    color: #99ff99;
+}
+body.green-theme .glass-button:hover {
+    background: rgba(102, 255, 102, 0.2);
+}
+
+body.orange-theme {
+    background: linear-gradient(135deg, #2e2e1a 0%, #3e3e16 100%);
+}
+body.orange-theme .glass-button {
+    border-color: #ff9966;
+    color: #ffcc99;
+}
+body.orange-theme .glass-button:hover {
+    background: rgba(255, 153, 102, 0.2);
+}
+
+body.cyan-theme {
+    background: linear-gradient(135deg, #1a2e2e 0%, #163e3e 100%);
+}
+body.cyan-theme .glass-button {
+    border-color: #66ffff;
+    color: #99ffff;
+}
+body.cyan-theme .glass-button:hover {
+    background: rgba(102, 255, 255, 0.2);
+}
+
+body.pink-theme {
+    background: linear-gradient(135deg, #2e1a2e 0%, #3e163e 100%);
+}
+body.pink-theme .glass-button {
+    border-color: #ff66cc;
+    color: #ff99e6;
+}
+body.pink-theme .glass-button:hover {
+    background: rgba(255, 102, 204, 0.2);
+}
+
+body.teal-theme {
+    background: linear-gradient(135deg, #1a2e2e 0%, #163e3e 100%);
+}
+body.teal-theme .glass-button {
+    border-color: #66cccc;
+    color: #99e6e6;
+}
+body.teal-theme .glass-button:hover {
+    background: rgba(102, 204, 204, 0.2);
+}
+
+body.gold-theme {
+    background: linear-gradient(135deg, #2e2e1a 0%, #3e3e16 100%);
+}
+body.gold-theme .glass-button {
+    border-color: #ffcc66;
+    color: #ffe699;
+}
+body.gold-theme .glass-button:hover {
+    background: rgba(255, 204, 102, 0.2);
+}
+
+body.default-theme {
+    background: linear-gradient(135deg, #2e2e2e 0%, #3e3e3e 100%);
+}
+body.default-theme .glass-button {
+    border-color: #cccccc;
+    color: #e6e6e6;
+}
+body.default-theme .glass-button:hover {
+    background: rgba(204, 204, 204, 0.2);
 }

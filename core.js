@@ -1,22 +1,33 @@
 let profile = {
+    username: 'Аноним',
     coins: 100,
-    energy: 20,
-    maxEnergy: 20,
+    energy: 50,
+    maxEnergy: 50,
     items: [],
-    theme: 'default',
-    casinoRig: {},
-    quests: [],
-    seasonProgress: 0,
     level: 1,
-    pets: [], // Массив питомцев
-    username: 'Аноним'
+    seasonProgress: 0,
+    luckyCharmActive: false,
+    quests: [],
+    pets: [],
+    petPlayCount: 0,
+    casinoLossStreak: 0,
+    theme: 'dark',
+    themeChangeCount: 0,
+    secrets: { found: [], total: 5 },
+    casinoRig: {}
 };
 
 function loadProfile() {
-    const savedProfile = localStorage.getItem('lapulya_profile');
-    if (savedProfile) {
-        profile = JSON.parse(savedProfile);
-        applyTheme();
+    const saved = localStorage.getItem('lapulya_profile');
+    if (saved) {
+        profile = JSON.parse(saved);
+        // Устанавливаем дефолтные значения для новых полей
+        profile.pets = profile.pets || [];
+        profile.petPlayCount = profile.petPlayCount || 0;
+        profile.casinoLossStreak = profile.casinoLossStreak || 0;
+        profile.themeChangeCount = profile.themeChangeCount || 0;
+        profile.secrets = profile.secrets || { found: [], total: 5 };
+        profile.casinoRig = profile.casinoRig || {};
     }
 }
 
@@ -26,24 +37,25 @@ function saveProfile() {
 
 function updateEnergy() {
     if (profile.energy < profile.maxEnergy) {
-        profile.energy += 1;
-        if (profile.energy > profile.maxEnergy) {
-            profile.energy = profile.maxEnergy;
+        profile.energy = Math.min(profile.maxEnergy, profile.energy + 1);
+        updateProfile();
+    }
+}
+
+// Восстановление энергии оффлайн
+function calculateOfflineEnergy() {
+    const lastVisit = localStorage.getItem('lastVisit');
+    const now = Date.now();
+    if (lastVisit) {
+        const secondsPassed = Math.floor((now - lastVisit) / 1000); // Сколько секунд прошло
+        const energyToAdd = Math.floor(secondsPassed / 10); // 1 энергия каждые 10 секунд
+        profile.energy = Math.min(profile.maxEnergy, profile.energy + energyToAdd);
+        if (energyToAdd > 0) {
+            showNotification(`Энергия восстановлена на ${energyToAdd} ⚡`);
         }
         updateProfile();
     }
 }
 
-// Пассивный доход от питомцев
-function updatePetIncome() {
-    profile.pets.forEach(pet => {
-        if (pet.level > 0) {
-            const income = pet.level * 5; // 5 монет за уровень каждые 5 минут
-            profile.coins += income;
-            showNotification(`Питомец ${pet.name} принёс ${income} монет! 🐾`);
-        }
-    });
-    updateProfile();
-}
-
-setInterval(updatePetIncome, 300000); // Каждые 5 минут
+// Вызываем при загрузке
+document.addEventListener('DOMContentLoaded', calculateOfflineEnergy);

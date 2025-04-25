@@ -41,7 +41,17 @@ function showMain() {
         <button class="back-button glass-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
         <h2>Добро пожаловать! 🚀</h2>
         <p>Выбери раздел, чтобы начать! 😺</p>
-        <p>💡 Прокрути нижнюю панель, чтобы найти "Квесты" и "Заработок"!</p>
+        <h3>Квесты 📜</h3>
+        <button class="action glass-button" onclick="startQuest()">Начать квест (5 энергии)</button>
+        <button class="action glass-button" onclick="startDailyQuest()">Ежедневный квест (10 энергии)</button>
+        ${profile.quests.length > 0 ? profile.quests.map((quest, index) => `
+            <p>${quest.name}: ${quest.progress}/${quest.goal} 
+            <button class="action glass-button" onclick="completeQuest(${index})">Завершить</button></p>
+        `).join('') : '<p>Нет активных квестов.</p>'}
+        <h3>Заработок 💸</h3>
+        <button class="action glass-button" onclick="earnCoins('Работа', 10)">Работа (5 энергии, +10 монет)</button>
+        <button class="action glass-button" onclick="earnCoins('Проект', 20)">Проект (10 энергии, +20 монет)</button>
+        <button class="action glass-button" onclick="earnCoins('Инвестиция', 50)">Инвестиция (20 энергии, +50 монет)</button>
     `;
     historyStack = ['main'];
     updateProfile();
