@@ -5,69 +5,148 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Лапуля App</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREQAAAAAAEAAAEAAAAAEAAAABAAAAEAAAAAAQAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAP+AAAH/gAAB/4AAAf+AAAP/AAAB/4AAA/+AAAP/gAAD/4AAA/+AAAP/wAAD/8AAA//gAAP/4AAA/+AAAP/gAAD/4AA" type="image/x-icon">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="main.js"></script>
-    <script src="ui.js"></script>
-    <script src="game.js"></script>
 </head>
 <body>
+    <!-- Верхняя панель с кнопками -->
+    <div id="top-bar" class="nav-bar">
+        <button class="action glass-button" data-action="showProfile">Профиль 👤</button>
+        <button class="action glass-button" data-action="showPets">Питомцы 🐾</button>
+        <button class="action glass-button" data-action="showCollections">Коллекции 🧺</button>
+    </div>
+
+    <!-- Левая боковая панель (для планшетов и ПК) -->
+    <div id="side-bar-left" class="nav-bar">
+        <button class="action glass-button" data-action="showInventory">Инвентарь 🎒</button>
+        <button class="action glass-button" data-action="showShop">Магазин 🏪</button>
+        <button class="action glass-button" data-action="showRealEstate">Недвижимость 🏡</button>
+    </div>
+
+    <!-- Правая боковая панель (для планшетов и ПК) -->
+    <div id="side-bar-right" class="nav-bar">
+        <button class="action glass-button" data-action="showGames">Казино 🎲</button>
+        <button class="action glass-button" data-action="showRewards">Награды 🎁</button>
+    </div>
+
+    <!-- Основной контент -->
     <div id="profile">Загрузка...</div>
     <div id="banner">
         <h2>Лапуля App 🐾</h2>
         <p>Играй, собирай питомцев и побеждай! 🚀</p>
+        <p id="eventInfo"></p>
     </div>
     <div id="main-content">
-        <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+        <button class="back-button glass-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
         <h2>Добро пожаловать! 🚀</h2>
-        <p>Выбери раздел в меню снизу, чтобы начать! 😺</p>
+        <p>Выбери раздел, чтобы начать! 😺</p>
     </div>
-    <div id="navbar">
-        <button class="action" onclick="showProfile()">Профиль 👤</button>
-        <button class="action" onclick="showPets()">Питомцы 🐾</button>
-        <button class="action" onclick="showCollections()">Коллекции 🧺</button>
-        <button class="action" onclick="showInventory()">Инвентарь 🎒</button>
-        <button class="action" onclick="showShop()">Магазин 🏪</button>
-        <button class="action" onclick="showGames()">Игры 🎲</button>
-        <button class="action" onclick="showRewards()">Награды 🎁</button>
-        <button class="action" onclick="showQuests()">Квесты 📜</button>
-        <button class="action" onclick="showTreasureHunt()">Поиск 🔍</button>
-        <button class="action" onclick="showWheel()">Колесо 🎡</button>
-        <button class="action" onclick="showEarn()">Заработок 💸</button>
+
+    <!-- Нижняя панель с кнопками -->
+    <div id="bottom-bar" class="nav-bar">
+        <button class="action glass-button" data-action="showQuests">Квесты 📜</button>
+        <button class="action glass-button" data-action="showTreasureHunt">Поиск 🔍</button>
+        <button class="action glass-button" data-action="showWheel">Колесо 🎡</button>
+        <button class="action glass-button" data-action="showEarn">Заработок 💸</button>
+        <button class="action glass-button" data-action="showFriends">Друзья 👥</button>
+        <button class="action glass-button" data-action="showTournaments">Турниры 🏆</button>
+        <button class="action glass-button" data-action="showSeasonPass">Пропуск 🎟️</button>
+        <!-- Кнопки из боковых панелей для мобильных -->
+        <button class="action glass-button mobile-only" data-action="showInventory">Инвентарь 🎒</button>
+        <button class="action glass-button mobile-only" data-action="showShop">Магазин 🏪</button>
+        <button class="action glass-button mobile-only" data-action="showGames">Казино 🎲</button>
+        <button class="action glass-button mobile-only" data-action="showRewards">Награды 🎁</button>
+        <button class="action glass-button mobile-only" data-action="showRealEstate">Недвижимость 🏡</button>
+        <button class="action glass-button" data-action="showOther">Другое ⚙️</button>
     </div>
+
+    <!-- Подключаем скрипты -->
+    <script src="core.js"></script>
+    <script src="ui-main.js"></script>
+    <script src="ui-casino.js"></script>
+    <script src="ui-realestate.js"></script>
+    <script src="ui-social.js"></script>
+    <script src="game-base.js"></script>
+    <script src="game-mini.js"></script>
+    <script src="game-special.js"></script>
+    <script src="social.js"></script>
     <script>
-        let historyStack = ['main'];
-        document.querySelectorAll('.action').forEach(button => {
-            button.addEventListener('touchstart', () => button.classList.add('active'));
-            button.addEventListener('touchend', () => button.classList.remove('active'));
-        });
-        window.Telegram.WebApp.onEvent('backButtonClicked', goBack);
-        window.Telegram.WebApp.BackButton.hide();
+        document.addEventListener('DOMContentLoaded', () => {
+            window.Telegram.WebApp.ready();
+            window.Telegram.WebApp.expand();
 
-        function goBack() {
-            if (historyStack.length > 1) {
-                historyStack.pop();
-                const lastSection = historyStack[historyStack.length - 1];
-                if (lastSection === 'main') {
-                    showMain();
-                } else {
-                    window[lastSection]();
-                }
+            if (typeof loadProfile === 'function') {
+                loadProfile();
+                updateProfile();
             } else {
-                showMain();
+                console.error('loadProfile is not defined. Check if core.js is loaded correctly.');
+                document.getElementById('profile').innerText = 'Ошибка загрузки профиля.';
             }
-        }
 
-        function showMain() {
-            document.getElementById('main-content').innerHTML = `
-                <button class="back-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
-                <h2>Добро пожаловать! 🚀</h2>
-                <p>Выбери раздел в меню снизу, чтобы начать! 😺</p>
-            `;
-            historyStack = ['main'];
-            window.Telegram.WebApp.BackButton.hide();
-            updateProfile();
-        }
+            if (profile && profile.event) {
+                document.getElementById('eventInfo').innerText = `Событие: ${profile.event.description}`;
+            } else {
+                document.getElementById('eventInfo').innerText = '';
+            }
+
+            let bannerClicks = 0;
+            const banner = document.getElementById('banner');
+            if (banner) {
+                banner.addEventListener('click', () => {
+                    bannerClicks++;
+                    if (bannerClicks >= 10) {
+                        profile.coins += 100;
+                        showNotification('Секретная награда! +100 монет 🎉');
+                        bannerClicks = 0;
+                        updateProfile();
+                    }
+                });
+            }
+
+            document.querySelectorAll('.action').forEach(button => {
+                button.addEventListener('touchstart', () => button.classList.add('active'));
+                button.addEventListener('touchend', () => button.classList.remove('active'));
+                button.addEventListener('click', () => {
+                    const action = button.getAttribute('data-action');
+                    if (action && window[action]) {
+                        window[action]();
+                    } else {
+                        console.error(`Function ${action} is not defined.`);
+                    }
+                });
+            });
+
+            window.goBack = function() {
+                if (historyStack.length > 1) {
+                    historyStack.pop();
+                    const lastSection = historyStack[historyStack.length - 1];
+                    if (lastSection === 'main') {
+                        showMain();
+                    } else if (window[lastSection]) {
+                        window[lastSection]();
+                    }
+                } else {
+                    showMain();
+                }
+            };
+
+            if (typeof updateEnergy === 'function') {
+                setInterval(updateEnergy, 1000);
+            } else {
+                console.error('updateEnergy is not defined. Check if core.js is loaded correctly.');
+            }
+
+            const mainContent = document.getElementById('main-content');
+            const navBars = document.querySelectorAll('.nav-bar');
+            mainContent.addEventListener('scroll', () => {
+                const scrollTop = mainContent.scrollTop;
+                const opacity = Math.max(0, 1 - scrollTop / 100);
+                navBars.forEach(bar => {
+                    bar.style.opacity = opacity;
+                });
+            });
+        });
     </script>
 </body>
 </html>
