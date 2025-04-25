@@ -1,348 +1,259 @@
-/* style.css */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+    --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    --text-color: #333;
+    --header-color: #2c3e50;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(255, 255, 255, 0.3);
+    --glass-active-bg: rgba(255, 255, 255, 0.4);
+    --profile-bg: rgba(255, 255, 255, 0.2);
+    --banner-bg: linear-gradient(45deg, #ff6f61, #de6262);
+    --banner-text-color: white;
+}
+
+body.red-theme {
+    --background-gradient: linear-gradient(135deg, #ff6f61 0%, #de6262 100%);
+    --text-color: #fff;
+    --header-color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #e74c3c, #c0392b);
+}
+
+body.blue-theme {
+    --background-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --text-color: #fff;
+    --header-color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #1e90ff, #00b7eb);
+}
+
+body.purple-theme {
+    --background-gradient: linear-gradient(135deg, #a445b2 0%, #d41872 100%);
+    --text-color: #fff;
+    --header-color: #fff;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #8a2be2, #ff00ff);
+}
+
+body.dark-theme {
+    --background-gradient: linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%);
+    --text-color: #ecf0f1;
+    --header-color: #ecf0f1;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-hover-bg: rgba(255, 255, 255, 0.2);
+    --glass-active-bg: rgba(255, 255, 255, 0.3);
+    --profile-bg: rgba(255, 255, 255, 0.1);
+    --banner-bg: linear-gradient(45deg, #34495e, #2c3e50);
+}
+
+body.green-theme {
+    --background-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --text-color: #333;
+    --header-color: #333;
+    --glass-bg: rgba(255, 255, 255, 0.2);
+    --glass-hover-bg: rgba(255, 255, 255, 0.3);
+    --glass-active-bg: rgba(255, 255, 255, 0.4);
+    --profile-bg: rgba(255, 255, 255, 0.2);
+    --banner-bg: linear-gradient(45deg, #28a745, #20c997);
 }
 
 body {
+    margin: 0;
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
-    color: #ffffff;
-    min-height: 100vh;
+    background: var(--background-gradient);
+    color: var(--text-color);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center;
-}
-
-/* Основной контент */
-#profile {
-    width: 100%;
-    max-width: 600px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 10px;
-    text-align: center;
-    margin-top: 80px; /* Увеличенный отступ для топ-бара */
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-#banner {
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
-    text-align: center;
-    background: linear-gradient(45deg, #ff6f61, #ffcc5c);
-    border-radius: 10px;
-    margin: 10px 0;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-#banner h2 {
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-#banner p {
-    font-size: 16px;
-}
-
-#main-content {
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
-    flex: 1;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #ff6f61 #2a2a40;
-    margin-bottom: 100px; /* Увеличенный отступ для нижней панели */
-}
-
-#main-content::-webkit-scrollbar {
-    width: 8px;
-}
-
-#main-content::-webkit-scrollbar-track {
-    background: #2a2a40;
-}
-
-#main-content::-webkit-scrollbar-thumb {
-    background: #ff6f61;
-    border-radius: 4px;
+    min-height: 100vh;
 }
 
 h2 {
-    font-size: 22px;
-    margin-bottom: 15px;
-    text-align: center;
-    color: #ffcc5c;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    color: var(--header-color);
+    margin: 10px 0;
 }
 
 p {
+    margin: 5px 0;
     font-size: 16px;
-    margin-bottom: 10px;
-    text-align: center;
 }
 
-/* Навигационные панели */
 .nav-bar {
-    position: fixed;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--glass-bg);
     backdrop-filter: blur(10px);
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: opacity 0.3s ease;
-    z-index: 1000;
+    border-radius: 15px;
+    margin: 5px;
 }
 
 #top-bar {
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    flex-direction: row;
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 #bottom-bar {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    flex-direction: row;
+    position: sticky;
+    bottom: 0;
+    z-index: 100;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    white-space: nowrap;
-    max-width: 90%;
-    padding: 5px 10px;
 }
 
-#bottom-bar::-webkit-scrollbar {
-    height: 5px;
-}
-
-#bottom-bar::-webkit-scrollbar-track {
-    background: #2a2a40;
-}
-
-#bottom-bar::-webkit-scrollbar-thumb {
-    background: #ff6f61;
-    border-radius: 5px;
+#side-bar-left, #side-bar-right {
+    display: none;
+    flex-direction: column;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    padding: 10px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
 }
 
 #side-bar-left {
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    flex-direction: column;
+    left: 0;
 }
 
 #side-bar-right {
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    flex-direction: column;
+    right: 0;
 }
 
-/* Glassmorphism кнопки */
-.glass-button {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border: none;
+#profile {
+    padding: 10px;
+    background: var(--profile-bg);
     border-radius: 10px;
-    padding: 8px 12px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14px;
-    color: #ffffff;
+    margin: 5px;
+    font-size: 16px;
+}
+
+#banner {
+    text-align: center;
+    padding: 15px;
+    background: var(--banner-bg);
+    color: var(--banner-text-color);
+    border-radius: 15px;
+    margin: 5px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#banner h2 {
+    margin: 0;
+    color: var(--banner-text-color);
+}
+
+#banner p {
+    margin: 5px 0;
+}
+
+#main-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    margin-bottom: 60px;
+}
+
+.glass-button {
+    background: var(--glass-bg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.1s, background 0.3s;
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 5px;
     white-space: nowrap;
 }
 
 .glass-button:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: var(--glass-hover-bg);
 }
 
 .glass-button:active, .glass-button.active {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(0);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(0.95);
+    background: var(--glass-active-bg);
 }
 
-/* Кнопка "Назад" */
+.action {
+    width: auto;
+    margin: 5px;
+}
+
 .back-button {
-    margin-bottom: 15px;
-    width: 120px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-bottom: 10px;
 }
 
-/* Уведомления */
 .notification {
     position: fixed;
-    top: 100px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    color: #ffffff;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
     padding: 10px 20px;
     border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    animation: slideDown 0.5s ease;
 }
 
-@keyframes slideDown {
-    from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-    to { transform: translateX(-50%) translateY(0); opacity: 1; }
-}
-
-/* Тёмная и светлая темы */
-body.dark {
-    background: linear-gradient(135deg, #1e1e2f 0%, #2a2a40 100%);
-}
-
-body.light {
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    color: #333333;
-}
-
-body.light #profile,
-body.light .nav-bar,
-body.light .notification {
-    background: rgba(255, 255, 255, 0.5);
-}
-
-body.light .glass-button {
-    background: rgba(255, 255, 255, 0.4);
-    color: #333333;
-}
-
-body.light .glass-button:hover {
-    background: rgba(255, 255, 255, 0.6);
-}
-
-/* Инпуты */
 input {
     padding: 10px;
-    margin: 10px 0;
-    border: none;
+    margin: 5px 0;
     border-radius: 10px;
-    background: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    border: 1px solid #ccc;
     font-family: 'Poppins', sans-serif;
-    width: 200px;
-    text-align: center;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-}
-
-body.light input {
-    background: rgba(255, 255, 255, 0.5);
-    color: #333333;
-}
-
-body.light input::placeholder {
-    color: rgba(0, 0, 0, 0.5);
-}
-
-/* Адаптивность */
-
-/* Мобильные устройства (до 768px) */
-@media (max-width: 768px) {
-    #profile {
-        margin-top: 60px;
-        padding: 10px;
-    }
-
-    #banner {
-        padding: 15px;
-    }
-
-    #main-content {
-        padding: 15px;
-        margin-bottom: 80px;
-    }
-
-    #top-bar {
-        gap: 5px;
-    }
-
-    #bottom-bar {
-        gap: 5px;
-        padding: 5px;
-    }
-
-    .glass-button {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-
-    #side-bar-left, #side-bar-right {
-        display: none; /* Скрываем боковые панели на мобильных */
-    }
-
-    .mobile-only {
-        display: flex; /* Показываем кнопки из боковых панелей в нижней панели */
-    }
-}
-
-/* Планшеты (768px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-    #profile {
-        margin-top: 70px;
-    }
-
-    #main-content {
-        margin-bottom: 90px;
+@media (min-width: 768px) {
+    body {
+        flex-direction: row;
     }
 
     #side-bar-left, #side-bar-right {
         display: flex;
     }
 
-    .mobile-only {
-        display: none; /* Скрываем дублирующие кнопки на планшетах */
-    }
-
-    .glass-button {
-        padding: 8px 12px;
-        font-size: 13px;
-    }
-}
-
-/* ПК (больше 1024px) */
-@media (min-width: 1025px) {
-    #profile {
-        margin-top: 80px;
-    }
-
     #main-content {
-        max-width: 800px;
-        margin-bottom: 100px;
+        margin-left: 220px;
+        margin-right: 220px;
     }
 
-    #side-bar-left, #side-bar-right {
-        display: flex;
-    }
-
-    .mobile-only {
+    #bottom-bar .mobile-only {
         display: none;
     }
+}
+
+@media (max-width: 767px) {
+    #bottom-bar {
+        display: flex;
+        gap: 5px;
+    }
 
     .glass-button {
-        padding: 10px 15px;
         font-size: 14px;
+        padding: 8px 15px;
     }
 }

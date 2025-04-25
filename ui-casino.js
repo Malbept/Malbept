@@ -17,13 +17,15 @@ function showGames() {
         historyStack.push('showGames');
     }
     updateProfile();
+    applyTheme();
 }
 
 // Орёл или решка
 function playCoinFlip() {
     if (profile.energy >= 5) {
         profile.energy -= 5;
-        const result = Math.random() > 0.5 ? 'win' : 'lose';
+        const winChance = profile.casinoRig?.coinflip || 0.5; // Подкрутка из админ-панели
+        const result = Math.random() < winChance ? 'win' : 'lose';
         if (result === 'win') {
             profile.coins += 20;
             showNotification('Ты выиграл! +20 монет 🎉');
@@ -41,11 +43,12 @@ function playCoinFlip() {
 function playSlots() {
     if (profile.energy >= 10) {
         profile.energy -= 10;
+        const winChance = profile.casinoRig?.slots || 0.5; // Подкрутка из админ-панели
         const result = Math.random();
-        if (result > 0.8) {
+        if (result < (winChance * 0.4)) { // Увеличиваем шанс джекпота
             profile.coins += 100;
             showNotification('Джекпот! +100 монет 🎰');
-        } else if (result > 0.5) {
+        } else if (result < winChance) {
             profile.coins += 30;
             showNotification('Неплохо! +30 монет 🎉');
         } else {
@@ -64,7 +67,10 @@ function playBlackjack() {
         profile.energy -= 10;
         let playerScore = Math.floor(Math.random() * 11) + 10; // Игрок получает от 10 до 21
         let dealerScore = Math.floor(Math.random() * 11) + 10; // Дилер получает от 10 до 21
-
+        const winChance = profile.casinoRig?.blackjack || 0.5; // Подкрутка из админ-панели
+        if (Math.random() < winChance) {
+            playerScore = Math.min(playerScore + 5, 21); // Увеличиваем шанс игрока
+        }
         document.getElementById('main-content').innerHTML = `
             <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
             <h2>Блэкджек 🎴</h2>
@@ -77,6 +83,7 @@ function playBlackjack() {
             profile.coins += 50;
         }
         updateProfile();
+        applyTheme();
     } else {
         showNotification('Недостаточно энергии! ⚡');
     }
@@ -88,7 +95,9 @@ function playRoulette() {
         profile.energy -= 5;
         const color = Math.random() > 0.5 ? 'red' : 'black';
         const playerBet = Math.random() > 0.5 ? 'red' : 'black'; // Упрощённая ставка
-        if (color === playerBet) {
+        const winChance = profile.casinoRig?.roulette || 0.5; // Подкрутка из админ-панели
+        const isWin = Math.random() < winChance ? (color === playerBet) : (color !== playerBet);
+        if (isWin) {
             profile.coins += 30;
             showNotification(`Выпало ${color}! Ты выиграл! +30 монет 🎉`);
         } else {
@@ -105,7 +114,8 @@ function playRoulette() {
 function playPoker() {
     if (profile.energy >= 15) {
         profile.energy -= 15;
-        const playerHand = Math.floor(Math.random() * 10) + 1; // Упрощённая рука (1-10)
+        const winChance = profile.casinoRig?.poker || 0.5; // Подкрутка из админ-панели
+        const playerHand = Math.random() < winChance ? Math.floor(Math.random() * 5) + 6 : Math.floor(Math.random() * 10) + 1; // Увеличиваем шанс игрока
         const dealerHand = Math.floor(Math.random() * 10) + 1;
         if (playerHand > dealerHand) {
             profile.coins += 70;
@@ -128,7 +138,7 @@ function showDepim() {
     document.getElementById('main-content').innerHTML = `
         <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Депим 🎰</h2>
-        <p>Поставь свою недвижимость и выиграй x2 или x3!</p>
+        <p>Поставь свою недвижимость и выиграй x2, x3, x5 или x10!</p>
         ${properties.length > 0 ? `
             <p>Твоя недвижимость:</p>
             ${properties.map((item, index) => `
@@ -140,6 +150,7 @@ function showDepim() {
         historyStack.push('showDepim');
     }
     updateProfile();
+    applyTheme();
 }
 
 function depimProperty(property, index) {
@@ -154,20 +165,33 @@ function depimProperty(property, index) {
         'Ранчо': 12000
     };
     const baseValue = propertyValues[property.split(' ')[0]] || 500;
+    const winChance = profile.casinoRig?.depim || 0.6; // Подкрутка из админ-панели
     const result = Math.random();
-    profile.items.splice(index, 1); // Удаляем недвижимость из инвентаря
 
-    if (result > 0.7) {
-        const multiplier = 3;
-        const winnings = baseValue * multiplier;
-        profile.coins += winnings;
-        showNotification(`Поздравляем! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
-    } else if (result > 0.4) {
-        const multiplier = 2;
-        const winnings = baseValue * multiplier;
-        profile.coins += winnings;
-        showNotification(`Неплохо! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
-    } else {
+    if (result < winChance) {
+        if (result > 0.99) { // 1% шанс на x10
+            const multiplier = 10;
+            const winnings = baseValue * multiplier;
+            profile.coins += winnings;
+            showNotification(`Удача! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
+        } else if (result > 0.94) { // 5% шанс на x5
+            const multiplier = 5;
+            const winnings = baseValue * multiplier;
+            profile.coins += winnings;
+            showNotification(`Круто! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
+        } else if (result > 0.7) { // 24% шанс на x3
+            const multiplier = 3;
+            const winnings = baseValue * multiplier;
+            profile.coins += winnings;
+            showNotification(`Поздравляем! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
+        } else { // 30% шанс на x2
+            const multiplier = 2;
+            const winnings = baseValue * multiplier;
+            profile.coins += winnings;
+            showNotification(`Неплохо! Ты выиграл x${multiplier}! +${winnings} монет 🎉`);
+        }
+    } else { // Проигрыш
+        profile.items.splice(index, 1); // Удаляем недвижимость только при проигрыше
         showNotification(`Ты проиграл... Недвижимость (${property}) потеряна 😿`);
     }
     showDepim();

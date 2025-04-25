@@ -76,9 +76,20 @@
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
 
+            // Получаем данные пользователя из Telegram
+            const user = window.Telegram.WebApp.initDataUnsafe.user;
+            if (user) {
+                profile.username = user.username || user.first_name || 'Аноним';
+                showNotification(`Привет, ${profile.username}! Добро пожаловать! 😺`);
+            } else {
+                profile.username = 'Аноним';
+                showNotification('Привет, Аноним! Добро пожаловать! 😺');
+            }
+
             if (typeof loadProfile === 'function') {
                 loadProfile();
                 updateProfile();
+                applyTheme(); // Применяем тему при загрузке
             } else {
                 console.error('loadProfile is not defined. Check if core.js is loaded correctly.');
                 document.getElementById('profile').innerText = 'Ошибка загрузки профиля.';
