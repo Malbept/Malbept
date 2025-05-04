@@ -1,121 +1,129 @@
+
 // game-mini.js
-function playClicker() {
-    document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
-        <h2>Кликер 🖱️</h2>
-        <p>Нажимай для монет!</p>
-        <button class="action" onclick="clickForCoins()">Клик!</button>
-    `;
-    if (!historyStack.includes('playClicker')) {
-        historyStack.push('playClicker');
-    }
-    profile.stats.clicker_games++;
-    updateProfile();
-}
-
-function clickForCoins() {
-    updateEnergy();
+window.clickTapButton = function() {
     if (profile.energy < 1) {
         showNotification('Недостаточно энергии! ⚡');
-        playClicker();
         return;
     }
-    profile.energy--;
-    const reward = Math.floor(10 * (1 + profile.level * 0.1));
-    profile.coins += reward;
-    let xp = profile.event && profile.event.effect === 'double_xp' ? 10 : 5;
+    profile.coins += profile.multitapLevel;
+    profile.energy -= 1;
+    profile.clicks += 1;
+    showNotification(`+${profile.multitapLevel} монет!`);
+    updateProfile();
+};
+window.checkLevelUp = function() {
+    while (profile.xp >= profile.level * 100 && profile.level < profile.maxLevel) {
+        profile.xp -= profile.level * 100;
+        profile.level++;
+        showNotification(`Поздравляем! Ты достиг уровня ${profile.level}! 🎉`);
+    }
+    updateProfile();
+};
+window.checkAchievements = function() {
+    // Заглушка
+};
+window.checkQuests = function(type) {
+    // Заглушка
+};
+window.checkSecret = function(type) {
+    // Заглушка
+};
+window.spinWheel = function() {
+    const rewards = [0, 10, 50, 100, 500, 1000];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Колесо удачи 🎡</h2>
+        <p>Ты выиграл: ${reward} монет!</p>
+    `;
+    if (!historyStack.includes('spinWheel')) {
+        historyStack.push('spinWheel');
+    }
+    const finalReward = Math.floor(reward * (1 + profile.level * 0.1));
+    profile.coins += finalReward;
+    let xp = reward > 0 ? (profile.event && profile.event.effect === 'double_xp' ? 40 : 20) : 5;
     profile.xp += xp;
-    showNotification(`+${reward} монет! 💰 +${xp} XP`);
-    checkQuests('play_clicker');
+    profile.stats.roulette_games++;
+    showNotification(`+${finalReward} монет! 🎉 +${xp} XP`);
+    checkAchievements();
+    checkQuests('spin_wheel');
     checkLevelUp();
-    playClicker();
     updateProfile();
-}
-
-function playRockPaperScissors() {
+};
+window.earnCoins = function() {
     updateEnergy();
     if (profile.energy < 1) {
         showNotification('Недостаточно энергии! ⚡');
         return;
     }
     profile.energy--;
-    document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
-        <h2>Камень-Ножницы-Бумага ✊✂️📜</h2>
-        <button class="action" onclick="playRPS('камень')">Камень ✊</button>
-        <button class="action" onclick="playRPS('ножницы')">Ножницы ✂️</button>
-        <button class="action" onclick="playRPS('бумага')">Бумага 📜</button>
-    `;
-    historyStack.push('playRockPaperScissors');
-}
-
-function playRPS(playerChoice) {
-    const choices = ['камень', 'ножницы', 'бумага'];
-    const botChoice = choices[Math.floor(Math.random() * choices.length)];
-    let result = '';
-    if (playerChoice === botChoice) {
-        result = 'Ничья! 🤝';
-    } else if (
-        (playerChoice === 'камень' && botChoice === 'ножницы') ||
-        (playerChoice === 'ножницы' && botChoice === 'бумага') ||
-        (playerChoice === 'бумага' && botChoice === 'камень')
-    ) {
-        result = 'Победа! +50 монет 🎉';
-        const reward = Math.floor(50 * (1 + profile.level * 0.1));
-        profile.coins += reward;
-        let xp = profile.event && profile.event.effect === 'double_xp' ? 30 : 15;
-        profile.xp += xp;
-        showNotification(`Победа! +${reward} монет 🎉 +${xp} XP`);
-        checkLevelUp();
-    } else {
-        result = 'Проигрыш! 😿';
-    }
-    document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
-        <h2>Камень-Ножницы-Бумага ✊✂️📜</h2>
-        <p>Твой выбор: ${playerChoice}</p>
-        <p>Выбор бота: ${botChoice}</p>
-        <p>${result}</p>
-    `;
+    const coins = Math.floor(50 * (1 + (profile.earn_boost || 0)) * (1 + profile.level * 0.1));
+    profile.coins += coins;
+    let xp = profile.event && profile.event.effect === 'double_xp' ? 20 : 10;
+    profile.xp += xp;
+    profile.stats.quests_completed++;
+    showNotification(`+${coins} монет! 💸 +${xp} XP`);
+    checkQuests('earn_coins');
+    checkLevelUp();
+    showEarn();
     updateProfile();
-}
-
-function playGuessNumber() {
-    updateEnergy();
-    if (profile.energy < 1) {
-        showNotification('Недостаточно энергии! ⚡');
-        return;
-    }
-    profile.energy--;
-    const number = Math.floor(Math.random() * 10) + 1;
+};
+window.showEarn = function() {
     document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
-        <h2>Угадай число 🔢</h2>
-        <p>Угадай число от 1 до 10:</p>
-        <input id="guessInput" type="number" min="1" max="10">
-        <button class="action" onclick="guessNumber(${number})">Угадать</button>
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Заработок 💸</h2>
+        <button class="hk-button" onclick="earnCoins()">Заработать монеты</button>
     `;
-    historyStack.push('playGuessNumber');
-}
-
-function guessNumber(correctNumber) {
-    const guess = parseInt(document.getElementById('guessInput').value);
-    if (guess === correctNumber) {
-        const reward = Math.floor(75 * (1 + profile.level * 0.1));
-        profile.coins += reward;
-        let xp = profile.event && profile.event.effect === 'double_xp' ? 50 : 25;
-        profile.xp += xp;
-        showNotification(`Правильно! +${reward} монет 🎉 +${xp} XP`);
-        checkLevelUp();
-        showGames();
+    historyStack.push('showEarn');
+};
+window.watchAd = function() {
+    setTimeout(() => {
+        profile.coins += 50;
+        showNotification('Реклама просмотрена! +50 монет 🎉');
+        showRewards();
+        updateProfile();
+    }, 2000);
+    showNotification('Просмотр рекламы...');
+};
+window.buyBoost = function(type) {
+    if (type === 'energy' && profile.coins >= 50) {
+        profile.coins -= 50;
+        profile.energy = profile.energyUpgradeLevel > 0 ? profile.maxEnergyUpgraded : profile.maxEnergy;
+        showNotification('Энергия полностью восстановлена! ⚡');
+    } else if (type === 'profit' && profile.coins >= 100) {
+        profile.coins -= 100;
+        const originalProfit = profile.profitPerHour;
+        profile.profitPerHour *= 2;
+        setTimeout(() => {
+            profile.profitPerHour = originalProfit;
+            showNotification('Эффект удвоения прибыли закончился! 📉');
+            updateProfile();
+        }, 300000);
+        showNotification('Прибыль удвоена на 5 минут! 📈');
     } else {
-        document.getElementById('main-content').innerHTML = `
-            <button class="back-button" onclick="goBack()">Назад ⬅️</button>
-            <h2>Угадай число 🔢</h2>
-            <p>Неправильно! Число было: ${correctNumber}</p>
-        `;
+        showNotification('Недостаточно монет! 💰');
     }
+    showBoosts();
     updateProfile();
-}
-
-// Конец файла game-mini.js
+};
+window.showBoosts = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Бусты 🚀</h2>
+        <div class="upgrade">
+            <div class="upgrade-info">
+                <p>Полная энергия</p>
+                <p>Восстанавливает всю энергию</p>
+            </div>
+            <button class="upgrade-button hk-button ${profile.coins < 50 ? 'disabled' : ''}" onclick="buyBoost('energy')">Купить за 50</button>
+        </div>
+        <div class="upgrade">
+            <div class="upgrade-info">
+                <p>Удвоить прибыль</p>
+                <p>Удваивает прибыль/ч на 5 минут</p>
+            </div>
+            <button class="upgrade-button hk-button ${profile.coins < 100 ? 'disabled' : ''}" onclick="buyBoost('profit')">Купить за 100</button>
+        </div>
+    `;
+    window.historyStack.push('showBoosts');
+};

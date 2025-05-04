@@ -1,0 +1,2834 @@
+
+--- achievements.js ---
+
+// Список достижений
+window.achievements = [
+    { id: 'coins_5000', name: 'Миллионер', description: 'Собери 5000 монет', condition: () => window.profile.coins >= 5000, reward: 500, completed: false },
+    { id: 'clicks_500', name: 'Мастер тапов', description: 'Сделай 500 кликов', condition: () => window.profile.clicks >= 500, reward: 300, completed: false },
+    { id: 'level_10', name: 'Ветеран', description: 'Достигни 10 уровня', condition: () => window.profile.level >= 10, reward: 1000, completed: false },
+    { id: 'energy_1000', name: 'Энергичный', description: 'Имей 1000 энергии', condition: () => window.profile.energy >= 1000, reward: 400, completed: false },
+    { id: 'multitap_5', name: 'Мультитапер', description: 'Достигни мультитапа 5', condition: () => window.profile.multitapLevel >= 5, reward: 600, completed: false }
+];
+
+// Функция для отображения достижений
+window.showAchievements = function() {
+    let achievementsHTML = '';
+    window.achievements.forEach(achievement => {
+        const isCompleted = window.profile.completedAchievements.includes(achievement.id);
+        achievementsHTML += `
+            <div class="achievement-item ${isCompleted ? 'completed' : ''}">
+                <p>${achievement.name}</p>
+                <p>${achievement.description}</p>
+                <p>Награда: ${achievement.reward} монет 💰</p>
+                ${isCompleted ? '<p>Получено ✅</p>' : '<p>В процессе...</p>'}
+            </div>
+        `;
+    });
+
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Достижения 🏆</h2>
+        <div class="achievements-container">
+            ${achievementsHTML}
+        </div>
+    `;
+    window.historyStack.push('showAchievements');
+};
+
+// Проверка достижений
+window.checkAchievements = function() {
+    window.achievements.forEach(achievement => {
+        if (!window.profile.completedAchievements.includes(achievement.id) && achievement.condition()) {
+            window.profile.completedAchievements.push(achievement.id);
+            window.profile.coins += achievement.reward;
+            window.showNotification(`Достижение "${achievement.name}" разблокировано! +${achievement.reward} монет 🏆`);
+            window.updateProfile();
+            window.saveProfile();
+        }
+    });
+};
+--- boosts.js ---
+
+// boosts.js
+window.getBoosts = function() {
+    return [
+        { name: 'Энергетик', level: 0, cost: 500, effect: { type: 'energy', amount: 50 } },
+        { name: 'Турбо-клик', level: 0, cost: 1000, effect: { type: 'multitap', amount: 1 } },
+        { name: 'Монетный дождь', level: 0, cost: 1500, effect: { type: 'coins', amount: 1000 } },
+        { name: 'XP-буст', level: 0, cost: 2000, effect: { type: 'xp', amount: 100 } },
+        { name: 'Супер-энергия', level: 0, cost: 2500, effect: { type: 'energy', amount: 100 } },
+        { name: 'Клик-мастер', level: 0, cost: 3000, effect: { type: 'multitap', amount: 2 } },
+        { name: 'Казначей', level: 0, cost: 3500, effect: { type: 'coins', amount: 2000 } },
+        { name: 'Опытный', level: 0, cost: 4000, effect: { type: 'xp', amount: 200 } },
+        { name: 'Мега-энергия', level: 0, cost: 4500, effect: { type: 'energy', amount: 150 } },
+        { name: 'Ультра-клик', level: 0, cost: 5000, effect: { type: 'multitap', amount: 3 } },
+        { name: 'Золотой сундук', level: 0, cost: 5500, effect: { type: 'coins', amount: 3000 } },
+        { name: 'Мастер XP', level: 0, cost: 6000, effect: { type: 'xp', amount: 300 } },
+        { name: 'Гипер-энергия', level: 0, cost: 6500, effect: { type: 'energy', amount: 200 } },
+        { name: 'Клик-гуру', level: 0, cost: 7000, effect: { type: 'multitap', amount: 4 } },
+        { name: 'Сокровищница', level: 0, cost: 7500, effect: { type: 'coins', amount: 4000 } },
+        { name: 'Легенда XP', level: 0, cost: 8000, effect: { type: 'xp', amount: 400 } },
+        { name: 'Квантовая энергия', level: 0, cost: 8500, effect: { type: 'energy', amount: 250 } },
+        { name: 'Клик-император', level: 0, cost: 9000, effect: { type: 'multitap', amount: 5 } },
+        { name: 'Алмазный сундук', level: 0, cost: 9500, effect: { type: 'coins', amount: 5000 } },
+        { name: 'Эпический XP', level: 0, cost: 10000, effect: { type: 'xp', amount: 500 } },
+        { name: 'Космическая энергия', level: 0, cost: 10500, effect: { type: 'energy', amount: 300 } },
+        { name: 'Клик-легенда', level: 0, cost: 11000, effect: { type: 'multitap', amount: 6 } },
+        { name: 'Платиновый сундук', level: 0, cost: 11500, effect: { type: 'coins', amount: 6000 } },
+        { name: 'Мифический XP', level: 0, cost: 12000, effect: { type: 'xp', amount: 600 } },
+        { name: 'Божественная энергия', level: 0, cost: 12500, effect: { type: 'energy', amount: 350 } }
+    ];
+};
+--- core.js ---
+
+// core.js
+let profile = {
+    // ... существующие поля ...
+    shopItems: {
+        movables: [], // Движимость
+        realEstate: [], // Недвижимость
+        boosts: [], // Купленные бусты
+    },
+    levelRewards: [], // Хранит полученные награды за уровни
+    maxLevel: 27, // Обновляем до 27 уровней
+};
+
+// Список наград за уровни
+const levelRewards = Array.from({ length: 27 }, (_, i) => {
+    const level = i + 1;
+    return {
+        level,
+        reward: level % 5 === 0 ? { type: 'pet', name: `Питомец Lv${level}`, cost: 0 } :
+                level % 3 === 0 ? { type: 'item', name: `Секрет ${level}`, cost: 0 } :
+                { type: 'coins', amount: level * 100 },
+        claimed: false,
+    };
+});
+
+function loadProfile() {
+    const saved = localStorage.getItem('lapulya_profile');
+    if (saved) {
+        profile = JSON.parse(saved);
+        profile.pets = profile.pets || [];
+        profile.petPlayCount = profile.petPlayCount || 0;
+        profile.casinoLossStreak = profile.casinoLossStreak || 0;
+        profile.themeChangeCount = profile.themeChangeCount || 0;
+        profile.secrets = profile.secrets || { found: [], total: 5 };
+        profile.casinoRig = profile.casinoRig || {};
+        profile.maxLevel = profile.maxLevel || 27;
+        profile.profitPerHour = profile.profitPerHour || 0;
+        profile.multitapLevel = profile.multitapLevel || 1;
+        profile.maxMultitap = profile.maxMultitap || 10;
+        profile.shopItems = profile.shopItems || { movables: [], realEstate: [], boosts: [] };
+        profile.levelRewards = profile.levelRewards || [];
+        profile.upgrades = profile.upgrades || {
+            'exchange': [
+                { name: 'Binance', level: 0, cost: 1000, profitPerHour: 207 },
+                { name: 'Kraken', level: 0, cost: 2000, profitPerHour: 240 },
+                { name: 'Coinbase', level: 0, cost: 750, profitPerHour: 70 }
+            ],
+            'mine': [
+                { name: 'Bitcoin Miner', level: 0, cost: 1000, profitPerHour: 70 }
+            ],
+            'friends': [],
+            'earn': [
+                { name: 'Referral Bonus', level: 0, cost: 500, profitPerHour: 70 },
+                { name: 'Daily Tasks', level: 0, cost: 500, profitPerHour: 90 }
+            ],
+            'airdrop': [
+                { name: 'Token Airdrop', level: 0, cost: 350, profitPerHour: 40 }
+            ]
+        };
+    }
+    calculateProfitPerHour();
+}
+
+function buyShopItem(category, itemIndex) {
+    const items = {
+        movables: [
+            { name: 'Спорткар', cost: 5000, profitPerHour: 500 },
+            { name: 'Яхта', cost: 10000, profitPerHour: 1000 },
+            { name: 'Частный самолет', cost: 15000, profitPerHour: 1500 },
+        ],
+        realEstate: [
+            { name: 'Квартира', cost: 8000, profitPerHour: 800 },
+            { name: 'Вилла', cost: 12000, profitPerHour: 1200 },
+            { name: 'Офисный центр', cost: 20000, profitPerHour: 2000 },
+        ],
+        boosts: [
+            { name: 'Полная энергия', cost: 50, effect: 'full_energy' },
+            { name: 'Удвоение прибыли', cost: 100, effect: 'double_profit', duration: 300000 },
+            { name: 'Быстрая энергия', cost: 75, effect: 'fast_energy', duration: 300000 },
+        ],
+        upgrades: [
+            { name: 'Мультитап', level: profile.multitapLevel, cost: 1000 * (1 + profile.multitapLevel * 0.5), profitPerHour: 0 },
+            { name: 'Энергия', level: profile.energyUpgradeLevel || 0, cost: 1500 * (1 + (profile.energyUpgradeLevel || 0) * 0.5), profitPerHour: 0 },
+        ],
+        pets: [
+            { name: 'Котик 😺', cost: 100, profitPerHour: 10 },
+            { name: 'Собачка 🐶', cost: 150, profitPerHour: 15 },
+            { name: 'Дракончик 🐉', cost: 200, profitPerHour: 20 },
+        ],
+    };
+    const item = items[category][itemIndex];
+    if (!item) {
+        showNotification('Предмет не найден! 😿');
+        return;
+    }
+
+    if (profile.coins >= item.cost) {
+        profile.coins -= item.cost;
+        if (category === 'upgrades') {
+            if (item.name === 'Мультитап') {
+                profile.multitapLevel++;
+                item.level = profile.multitapLevel;
+                item.cost = Math.floor(1000 * (1 + profile.multitapLevel * 0.5));
+            } else if (item.name === 'Энергия') {
+                profile.energyUpgradeLevel = (profile.energyUpgradeLevel || 0) + 1;
+                profile.maxEnergyUpgraded = 100000 + profile.energyUpgradeLevel * 10000;
+                item.level = profile.energyUpgradeLevel;
+                item.cost = Math.floor(1500 * (1 + profile.energyUpgradeLevel * 0.5));
+            }
+        } else if (category === 'boosts') {
+            if (item.effect === 'full_energy') {
+                profile.energy = profile.maxEnergyUpgraded || profile.maxEnergy;
+                showNotification('Энергия полностью восстановлена! ⚡');
+            } else if (item.effect === 'double_profit') {
+                const originalProfit = profile.profitPerHour;
+                profile.profitPerHour *= 2;
+                setTimeout(() => {
+                    profile.profitPerHour = originalProfit;
+                    showNotification('Эффект удвоения прибыли закончился! 📉');
+                    updateProfile();
+                }, item.duration);
+                showNotification('Прибыль удвоена на 5 минут! 📈');
+            } else if (item.effect === 'fast_energy') {
+                const originalInterval = 3000;
+                const fastInterval = setInterval(updateEnergy, 1000);
+                setTimeout(() => {
+                    clearInterval(fastInterval);
+                    setInterval(updateEnergy, originalInterval);
+                    showNotification('Эффект быстрой энергии закончился! ⚡');
+                    updateProfile();
+                }, item.duration);
+                showNotification('Энергия восстанавливается быстрее на 5 минут! ⚡');
+            }
+            profile.shopItems.boosts.push(item);
+        } else if (category === 'pets') {
+            profile.pets.push({ name: item.name, type: item.name, level: 1 });
+            item.cost = Math.floor(item.cost * 1.5);
+            showNotification(`Ты приютил питомца: ${item.name}! 🐾`);
+        } else {
+            profile.shopItems[category].push(item);
+            item.cost = Math.floor(item.cost * 2);
+            showNotification(`Куплено: ${item.name}! 🎉`);
+        }
+        calculateProfitPerHour();
+        updateProfile();
+    } else {
+        showNotification('Недостаточно монет! 💰');
+    }
+}
+
+function claimLevelReward(level) {
+    const reward = levelRewards.find(r => r.level === level);
+    if (!reward || reward.claimed || profile.level < level) {
+        showNotification('Награда недоступна! 😿');
+        return;
+    }
+    reward.claimed = true;
+    if (reward.reward.type === 'coins') {
+        profile.coins += reward.reward.amount;
+        showNotification(`Получено: ${reward.reward.amount} монет! 💰`);
+    } else if (reward.reward.type === 'item') {
+        profile.items.push(reward.reward.name);
+        showNotification(`Получено: ${reward.reward.name}! 🎁`);
+    } else if (reward.reward.type === 'pet') {
+        profile.pets.push({ name: reward.reward.name, type: reward.reward.name, level: 1 });
+        showNotification(`Получено: ${reward.reward.name}! 🐾`);
+    }
+    profile.levelRewards.push(level);
+    calculateProfitPerHour();
+    updateProfile();
+}
+--- game-mini.js ---
+
+// game-mini.js
+window.clickTapButton = function() {
+    if (profile.energy < 1) {
+        showNotification('Недостаточно энергии! ⚡');
+        return;
+    }
+    profile.coins += profile.multitapLevel;
+    profile.energy -= 1;
+    profile.clicks += 1;
+    showNotification(`+${profile.multitapLevel} монет!`);
+    updateProfile();
+};
+window.checkLevelUp = function() {
+    while (profile.xp >= profile.level * 100 && profile.level < profile.maxLevel) {
+        profile.xp -= profile.level * 100;
+        profile.level++;
+        showNotification(`Поздравляем! Ты достиг уровня ${profile.level}! 🎉`);
+    }
+    updateProfile();
+};
+window.checkAchievements = function() {
+    // Заглушка
+};
+window.checkQuests = function(type) {
+    // Заглушка
+};
+window.checkSecret = function(type) {
+    // Заглушка
+};
+window.spinWheel = function() {
+    const rewards = [0, 10, 50, 100, 500, 1000];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Колесо удачи 🎡</h2>
+        <p>Ты выиграл: ${reward} монет!</p>
+    `;
+    if (!historyStack.includes('spinWheel')) {
+        historyStack.push('spinWheel');
+    }
+    const finalReward = Math.floor(reward * (1 + profile.level * 0.1));
+    profile.coins += finalReward;
+    let xp = reward > 0 ? (profile.event && profile.event.effect === 'double_xp' ? 40 : 20) : 5;
+    profile.xp += xp;
+    profile.stats.roulette_games++;
+    showNotification(`+${finalReward} монет! 🎉 +${xp} XP`);
+    checkAchievements();
+    checkQuests('spin_wheel');
+    checkLevelUp();
+    updateProfile();
+};
+window.earnCoins = function() {
+    updateEnergy();
+    if (profile.energy < 1) {
+        showNotification('Недостаточно энергии! ⚡');
+        return;
+    }
+    profile.energy--;
+    const coins = Math.floor(50 * (1 + (profile.earn_boost || 0)) * (1 + profile.level * 0.1));
+    profile.coins += coins;
+    let xp = profile.event && profile.event.effect === 'double_xp' ? 20 : 10;
+    profile.xp += xp;
+    profile.stats.quests_completed++;
+    showNotification(`+${coins} монет! 💸 +${xp} XP`);
+    checkQuests('earn_coins');
+    checkLevelUp();
+    showEarn();
+    updateProfile();
+};
+window.showEarn = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Заработок 💸</h2>
+        <button class="hk-button" onclick="earnCoins()">Заработать монеты</button>
+    `;
+    historyStack.push('showEarn');
+};
+window.watchAd = function() {
+    setTimeout(() => {
+        profile.coins += 50;
+        showNotification('Реклама просмотрена! +50 монет 🎉');
+        showRewards();
+        updateProfile();
+    }, 2000);
+    showNotification('Просмотр рекламы...');
+};
+window.buyBoost = function(type) {
+    if (type === 'energy' && profile.coins >= 50) {
+        profile.coins -= 50;
+        profile.energy = profile.energyUpgradeLevel > 0 ? profile.maxEnergyUpgraded : profile.maxEnergy;
+        showNotification('Энергия полностью восстановлена! ⚡');
+    } else if (type === 'profit' && profile.coins >= 100) {
+        profile.coins -= 100;
+        const originalProfit = profile.profitPerHour;
+        profile.profitPerHour *= 2;
+        setTimeout(() => {
+            profile.profitPerHour = originalProfit;
+            showNotification('Эффект удвоения прибыли закончился! 📉');
+            updateProfile();
+        }, 300000);
+        showNotification('Прибыль удвоена на 5 минут! 📈');
+    } else {
+        showNotification('Недостаточно монет! 💰');
+    }
+    showBoosts();
+    updateProfile();
+};
+window.showBoosts = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Бусты 🚀</h2>
+        <div class="upgrade">
+            <div class="upgrade-info">
+                <p>Полная энергия</p>
+                <p>Восстанавливает всю энергию</p>
+            </div>
+            <button class="upgrade-button hk-button ${profile.coins < 50 ? 'disabled' : ''}" onclick="buyBoost('energy')">Купить за 50</button>
+        </div>
+        <div class="upgrade">
+            <div class="upgrade-info">
+                <p>Удвоить прибыль</p>
+                <p>Удваивает прибыль/ч на 5 минут</p>
+            </div>
+            <button class="upgrade-button hk-button ${profile.coins < 100 ? 'disabled' : ''}" onclick="buyBoost('profit')">Купить за 100</button>
+        </div>
+    `;
+    window.historyStack.push('showBoosts');
+};
+--- game-special.js ---
+
+function startTreasureHunt() {
+    updateEnergy();
+    if (profile.energy < 1) {
+        showNotification('Недостаточно энергии! ⚡');
+        return;
+    }
+    profile.energy--;
+    const rewards = [50, 100, 150, 200];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Поиск сокровищ 🔍</h2>
+        <p>Сокровище найдено! +${reward} монет</p>
+    `;
+    if (!historyStack.includes('startTreasureHunt')) {
+        historyStack.push('startTreasureHunt');
+    }
+    const finalReward = Math.floor(reward * (1 + profile.level * 0.1));
+    profile.coins += finalReward;
+    let xp = profile.event && profile.event.effect === 'double_xp' ? 60 : 30;
+    profile.xp += xp;
+    profile.stats.treasure_hunts++;
+    showNotification(`Сокровище найдено! +${finalReward} монет 🪙 +${xp} XP`);
+    checkAchievements();
+    checkQuests('treasure_hunt');
+    checkLevelUp();
+    updateProfile();
+}
+
+function spinWheel() {
+    updateEnergy();
+    if (profile.energy < 1) {
+        showNotification('Недостаточно энергии! ⚡');
+        return;
+    }
+    profile.energy--;
+    const rewards = [10, 50, 100, 0, 200, 500];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Колесо фортуны 🎡</h2>
+        <p>Ты выиграл: ${reward} монет!</p>
+    `;
+    if (!historyStack.includes('spinWheel')) {
+        historyStack.push('spinWheel');
+    }
+    const finalReward = Math.floor(reward * (1 + profile.level * 0.1));
+    profile.coins += finalReward;
+    let xp = reward > 0 ? (profile.event && profile.event.effect === 'double_xp' ? 40 : 20) : 5;
+    profile.xp += xp;
+    profile.stats.roulette_games++;
+    showNotification(`+${finalReward} монет! 🎉 +${xp} XP`);
+    checkAchievements();
+    checkQuests('spin_wheel');
+    checkLevelUp();
+    updateProfile();
+}
+
+function earnCoins() {
+    updateEnergy();
+    if (profile.energy < 1) {
+        showNotification('Недостаточно энергии! ⚡');
+        return;
+    }
+    profile.energy--;
+    const coins = Math.floor(50 * (1 + profile.earn_boost) * (1 + profile.level * 0.1));
+    profile.coins += coins;
+    let xp = profile.event && profile.event.effect === 'double_xp' ? 20 : 10;
+    profile.xp += xp;
+    profile.stats.quests_completed++;
+    showNotification(`+${coins} монет! 💸 +${xp} XP`);
+    checkQuests('earn_coins');
+    checkLevelUp();
+    showEarn();
+    updateProfile();
+}
+
+function watchAd() {
+    setTimeout(() => {
+        profile.coins += 50;
+        showNotification('Реклама просмотрена! +50 монет 🎉');
+        showRewards();
+        updateProfile();
+    }, 2000);
+    showNotification('Просмотр рекламы...');
+}
+
+function showBoosts() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Бусты 🚀</h2>
+        <button class="action glass-button" onclick="buyBoost('energy')">Полная энергия (50 монет)</button>
+        <button class="action glass-button" onclick="buyBoost('profit')">Удвоить прибыль (100 монет)</button>
+    `;
+    historyStack.push('showBoosts');
+}
+
+function buyBoost(type) {
+    if (type === 'energy' && profile.coins >= 50) {
+        profile.coins -= 50;
+        profile.energy = profile.maxEnergy;
+        showNotification('Энергия полностью восстановлена! ⚡');
+    } else if (type === 'profit' && profile.coins >= 100) {
+        profile.coins -= 100;
+        const originalProfit = profile.profitPerHour;
+        profile.profitPerHour *= 2;
+        setTimeout(() => {
+            profile.profitPerHour = originalProfit;
+            showNotification('Эффект удвоения прибыли закончился! 📉');
+            updateProfile();
+        }, 300000);
+        showNotification('Прибыль удвоена на 5 минут! 📈');
+    } else {
+        showNotification('Недостаточно монет! 💰');
+    }
+    showBoosts();
+    updateProfile();
+}
+--- items.js ---
+
+// Заглушка для будущих предметов
+window.items = {
+    pets: [
+        { id: 'hamster', name: 'Хомяк', cost: 2000, profitPerHour: 20 }
+    ],
+    realEstate: [
+        { id: 'mansion', name: 'Особняк', cost: 1500, profitPerHour: 15 }
+    ],
+    mobility: [
+        { id: 'yacht', name: 'Яхта', cost: 1000, profitPerHour: 10 }
+    ]
+};
+--- levels.js ---
+
+// Функция для отображения окна с уровнями
+window.showLevels = function() {
+    const xpNeeded = window.profile.level * 100;
+    const remainingXP = xpNeeded - window.profile.xp;
+
+    // Формируем список уровней
+    let levelsHTML = '';
+    for (let i = 1; i <= window.profile.maxLevel; i++) {
+        const bonus = window.levelBonuses[i - 1];
+        const isClaimed = window.profile.claimedLevelBonuses.includes(i);
+        const isCurrent = i === window.profile.level;
+        levelsHTML += `
+            <div class="level-item ${isClaimed ? 'claimed' : ''} ${isCurrent ? 'current' : ''}">
+                <p>Уровень ${i} ${isCurrent ? '(Текущий)' : ''}</p>
+                <p>Награда: ${bonus.coins} монет 💰, ${bonus.energy} энергии ⚡, ${bonus.xp} XP 📈</p>
+                ${isCurrent ? `<p>До следующего уровня: ${remainingXP} XP</p>` : ''}
+                ${isClaimed ? '<p>Получено ✅</p>' : i < window.profile.level ? '<p>Пропущено</p>' : ''}
+            </div>
+        `;
+    }
+
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Уровни 🎖️</h2>
+        <div class="levels-container">
+            ${levelsHTML}
+        </div>
+    `;
+    window.historyStack.push('showLevels');
+};
+--- movables.js ---
+
+// movables.js
+window.getMovables = function() {
+    return [
+        { name: 'Скутер', count: 0, cost: 500, maxCount: 15 },
+        { name: 'Машина', count: 0, cost: 1000, maxCount: 15 },
+        { name: 'Яхта', count: 0, cost: 5000, maxCount: 15 },
+        { name: 'Самолёт', count: 0, cost: 10000, maxCount: 15 },
+        { name: 'Вертолёт', count: 0, cost: 15000, maxCount: 15 },
+        { name: 'Космический корабль', count: 0, cost: 50000, maxCount: 15 }
+    ];
+};
+--- pets.js ---
+
+// pets.js
+window.getPets = function() {
+    return [
+        { name: 'Котик', type: 'Обычный', cost: 1000, level: 1, maxLevel: 13 },
+        { name: 'Собачка', type: 'Обычный', cost: 1500, level: 1, maxLevel: 13 },
+        { name: 'Хомяк', type: 'Редкий', cost: 3000, level: 1, maxLevel: 13 },
+        { name: 'Попугай', type: 'Редкий', cost: 4000, level: 1, maxLevel: 13 },
+        { name: 'Дракончик', type: 'Легендарный', cost: 10000, level: 1, maxLevel: 13 }
+    ];
+};
+--- promo-data.js ---
+
+// promo-data.js
+window.promoCodes = [
+    { code: 'vasya', type: 'coins', amount: 1000 },
+    { code: 'pupkin', type: 'energy', amount: 500 },
+    { code: 'XP200', type: 'xp', amount: 200 },
+    { code: 'gold', type: 'coins', amount: 5000 },
+    { code: 'golds', type: 'coins', amount: 500000 },
+    { code: 'вадим', type: 'coins', amount: 50000000 },
+    { code: 'energy', type: 'energy', amount: 1000 },
+    { code: 'petboost', type: 'pet_upgrade', amount: 1 }
+];
+--- promo.js ---
+
+// promo.js
+window.getPromoCodes = function() {
+    return [
+        { code: 'vasya', type: 'coins', amount: 1000 },
+        { code: 'pupkin', type: 'energy', amount: 500 },
+        { code: 'XP200', type: 'xp', amount: 200 },
+        { code: 'gold', type: 'coins', amount: 5000 },
+        { code: 'energy', type: 'energy', amount: 1000 }
+    ];
+};
+--- promocode.js ---
+
+// promocode.js
+window.getPromoCodes = function() {
+    return window.promoCodes || []; // Загружаем из promo-data.js
+};
+
+window.activatePromoCode = function(code) {
+    console.log('Активация промокода:', code); // Отладка
+    if (!window.profile) {
+        console.error('window.profile не определён!');
+        return { success: false, message: 'Ошибка: профиль не загружен! 😿' };
+    }
+    if (!window.profile.claimedPromoCodes) {
+        window.profile.claimedPromoCodes = [];
+    }
+    const promo = window.getPromoCodes().find(p => p.code === code);
+    if (!promo) {
+        return { success: false, message: 'Промокод не найден! 😿' };
+    }
+    if (window.profile.claimedPromoCodes.includes(code)) {
+        return { success: false, message: 'Ты уже активировал этот промокод! 😿' };
+    }
+    if (promo.type === 'coins') {
+        window.profile.coins += promo.amount;
+    } else if (promo.type === 'energy') {
+        window.profile.energy = Math.min(
+            window.profile.energy + promo.amount,
+            window.profile.energyUpgradeLevel > 0 ? window.profile.maxEnergyUpgraded : window.profile.maxEnergy
+        );
+    } else if (promo.type === 'xp') {
+        window.profile.xp += promo.amount;
+        if (window.checkLevelUp) {
+            window.checkLevelUp();
+        } else {
+            console.warn('checkLevelUp не определён');
+        }
+    } else if (promo.type === 'pet_upgrade') {
+        if (!window.profile.pets || window.profile.pets.length === 0) {
+            return { success: false, message: 'Нет питомцев для улучшения! 🐾' };
+        }
+        window.profile.pets.forEach(pet => {
+            pet.level = (pet.level || 1) + promo.amount;
+        });
+        window.calculateProfitPerHour();
+    }
+    window.profile.claimedPromoCodes.push(code);
+    if (window.updateProfile) {
+        window.updateProfile();
+    } else {
+        console.error('updateProfile не определён!');
+    }
+    if (window.saveProfile) {
+        window.saveProfile();
+    } else {
+        console.warn('saveProfile не определён');
+    }
+    window.updateQuests(); // Обновляем квесты
+    return {
+        success: true,
+        message: `Промокод активирован! ${
+            promo.type === 'coins' ? `+${promo.amount} монет 💰` :
+            promo.type === 'energy' ? `+${promo.amount} энергии ⚡` :
+            promo.type === 'xp' ? `+${promo.amount} XP 📈` :
+            `Все питомцы улучшены на ${promo.amount} уровень 🐾`
+        }`
+    };
+};
+
+window.showBonuses = function() {
+    console.log('Открытие раздела Бонусы'); // Отладка
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Бонусы 🎁</h2>
+        <div class="promo-section">
+            <p>Введите промокод для получения бонусов!</p>
+            <input type="text" id="promoCodeInput" placeholder="Введите промокод (например, vasya)" style="width: 200px;">
+            <button class="hk-button" onclick="claimPromoCode()">Активировать промокод</button>
+        </div>
+    `;
+    window.historyStack.push('showBonuses');
+};
+
+window.claimPromoCode = function() {
+    const code = document.getElementById('promoCodeInput').value.trim();
+    console.log('Попытка активации промокода:', code); // Отладка
+    if (!code) {
+        window.showNotification('Введите промокод!');
+        return;
+    }
+    const result = window.activatePromoCode(code);
+    window.showNotification(result.message);
+};
+--- real_estate.js ---
+
+// real_estate.js
+window.getRealEstate = function() {
+    return [
+        { name: 'Квартира', count: 0, cost: 1000, maxCount: 15 },
+        { name: 'Дом', count: 0, cost: 2000, maxCount: 15 },
+        { name: 'Коттедж', count: 0, cost: 5000, maxCount: 15 },
+        { name: 'Вилла', count: 0, cost: 10000, maxCount: 15 },
+        { name: 'Замок', count: 0, cost: 20000, maxCount: 15 },
+        { name: 'Остров', count: 0, cost: 50000, maxCount: 15 },
+        { name: 'Небоскрёб', count: 0, cost: 100000, maxCount: 15 },
+        { name: 'Гостиница', count: 0, cost: 150000, maxCount: 15 },
+        { name: 'Торговый центр', count: 0, cost: 200000, maxCount: 15 },
+        { name: 'Стадион', count: 0, cost: 300000, maxCount: 15 }
+    ];
+};
+--- settings.js ---
+
+// settings.js
+window.showOther = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Настройки ⚙️</h2>
+        <p>Настройки временно недоступны.</p>
+    `;
+    window.historyStack.push('showOther');
+};
+window.changeTheme = function() {
+    window.showNotification("Смена темы временно отключена.");
+};
+window.changeLanguage = function() {
+    window.showNotification("Смена языка временно отключена.");
+};
+--- shop.js ---
+
+// Функция для отображения магазина
+window.showShop = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Магазин 🛒</h2>
+        <div id="shop-tabs" class="nav-bar">
+            <button class="tab-button active" onclick="showShopTab('boosts')">Бусты</button>
+            <button class="tab-button" onclick="showShopTab('pets')">Питомцы</button>
+            <button class="tab-button" onclick="showShopTab('realEstate')">Недвижимость</button>
+            <button class="tab-button" onclick="showShopTab('mobility')">Движимость</button>
+            <button class="tab-button" onclick="showShopTab('business')">Бизнес</button>
+            <button class="tab-button" onclick="showShopTab('investments')">Инвестиции</button>
+        </div>
+        <div id="shop-content"></div>
+    `;
+    window.historyStack.push('showShop');
+    showShopTab('boosts'); // По умолчанию открываем Бусты
+};
+
+// Функция для отображения вкладки магазина
+window.showShopTab = function(tabName) {
+    if (tabName === 'boosts') {
+        window.showBoostsShop();
+        return;
+    }
+
+    const upgrades = window.profile.upgrades[tabName] || [];
+    document.getElementById('shop-content').innerHTML = `
+        <h3>${tabName === 'mobility' ? 'Движимость' : tabName === 'realEstate' ? 'Недвижимость' : tabName === 'pets' ? 'Питомцы' : tabName === 'business' ? 'Бизнес' : 'Инвестиции'}</h3>
+        ${upgrades.map((upgrade, index) => `
+            <div class="upgrade">
+                <div class="upgrade-icon">📈</div>
+                <div class="upgrade-info">
+                    <p>${upgrade.name} (Lv ${upgrade.level})</p>
+                    <p>Прибыль/ч: +${upgrade.profitPerHour.toLocaleString()}</p>
+                </div>
+                <button class="upgrade-button hk-button ${window.profile.coins < upgrade.cost ? 'disabled' : ''}" onclick="buyUpgrade('${tabName}', ${index})">Купить за ${upgrade.cost.toLocaleString()}</button>
+            </div>
+        `).join('')}
+    `;
+
+    document.querySelectorAll('#shop-tabs .tab-button').forEach(button => {
+        button.classList.remove('active');
+        if (button.textContent === (tabName === 'mobility' ? 'Движимость' : tabName === 'realEstate' ? 'Недвижимость' : tabName === 'pets' ? 'Питомцы' : tabName === 'business' ? 'Бизнес' : 'Инвестиции')) {
+            button.classList.add('active');
+        }
+    });
+};
+--- ui-main.js ---
+
+// ui-main.js
+window.showNotification = function(message) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.innerText = message;
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+};
+
+window.historyStack = ['main'];
+
+window.profile = {
+    username: 'Аноним',
+    coins: 0,
+    maCoins: 0,
+    maCoinPrice: 60000,
+    energy: 100,
+    maxEnergy: 100,
+    maxEnergyUpgraded: 100000,
+    energyUpgradeLevel: 0,
+    multitapLevel: 1,
+    maxMultitap: 10,
+    level: 1,
+    maxLevel: 27,
+    profitPerHour: 0,
+    upgrades: {
+        real_estate: [],
+        movables: [],
+        upgrades: [],
+        boosts: []
+    },
+    ownedItems: {
+        real_estate: [],
+        movables: [],
+        upgrades: []
+    },
+    theme: 'dark',
+    stats: { clicker_games: 0, roulette_games: 0, depim_games: 0, quests_completed: 0 },
+    event: null,
+    xp: 0,
+    clicks: 0,
+    claimedBonuses: [],
+    claimedPromoCodes: [],
+    pets: [],
+    petPlayCount: 0,
+    petUpgrades: {},
+    quests: [],
+    completedQuests: [],
+    levelConditions: {
+        2: { xp: 200, quests: 1 },
+        3: { xp: 500, quests: 2 },
+        4: { xp: 1000, upgrades: 1 },
+        5: { xp: 2000, pets: 1 },
+        6: { xp: 3500, clicks: 50 },
+        7: { xp: 5000, casino: 1 },
+        8: { xp: 7500, upgrades: 2 },
+        9: { xp: 10000, pets: 2 },
+        10: { xp: 15000, quests: 5 },
+        11: { xp: 20000, clicks: 100 },
+        12: { xp: 25000, casino: 2 },
+        13: { xp: 30000, upgrades: 3 },
+        14: { xp: 40000, pets: 3 },
+        15: { xp: 50000, quests: 7 },
+        16: { xp: 60000, clicks: 200 },
+        17: { xp: 70000, casino: 3 },
+        18: { xp: 80000, upgrades: 4 },
+        19: { xp: 90000, pets: 4 },
+        20: { xp: 100000, quests: 10 },
+        21: { xp: 120000, clicks: 300 },
+        22: { xp: 140000, casino: 4 },
+        23: { xp: 160000, upgrades: 5 },
+        24: { xp: 180000, pets: 5 },
+        25: { xp: 200000, quests: 12 },
+        26: { xp: 250000, clicks: 500 },
+        27: { xp: 300000, casino: 5, upgrades: 10, pets: 10, quests: 15 }
+    }
+};
+
+window.loadProfile = function() {
+    const savedProfile = localStorage.getItem('hamsterProfile');
+    if (savedProfile) {
+        window.profile = JSON.parse(savedProfile);
+    }
+    if (!window.profile.pets) window.profile.pets = [];
+    if (!window.profile.maCoins) window.profile.maCoins = 0;
+    if (!window.profile.maCoinPrice) window.profile.maCoinPrice = 60000;
+    if (!window.profile.claimedPromoCodes) window.profile.claimedPromoCodes = [];
+    if (!window.profile.upgrades) window.profile.upgrades = { real_estate: [], movables: [], upgrades: [], boosts: [] };
+    if (!window.profile.ownedItems) window.profile.ownedItems = { real_estate: [], movables: [], upgrades: [] };
+    if (!window.profile.stats) window.profile.stats = { clicker_games: 0, roulette_games: 0, depim_games: 0, quests_completed: 0 };
+    if (!window.profile.completedQuests) window.profile.completedQuests = [];
+    if (!window.profile.levelConditions) window.profile.levelConditions = window.profile.levelConditions || {};
+
+    window.profile.upgrades.real_estate = window.getRealEstate();
+    window.profile.upgrades.movables = window.getMovables();
+    window.profile.upgrades.upgrades = window.getUpgrades();
+    window.profile.upgrades.boosts = window.getBoosts();
+    window.profile.ownedItems.real_estate = window.getRealEstate();
+    window.profile.ownedItems.movables = window.getMovables();
+    window.profile.ownedItems.upgrades = window.getUpgrades();
+
+    const availablePets = window.getPets();
+    if (window.profile.pets.length === 0) {
+        window.profile.pets = availablePets.map(pet => ({ ...pet }));
+    } else {
+        window.profile.pets = window.profile.pets.map(pet => {
+            const updatedPet = availablePets.find(p => p.name === pet.name) || pet;
+            return { ...updatedPet, level: pet.level || 1 };
+        });
+    }
+};
+
+window.saveProfile = function() {
+    localStorage.setItem('hamsterProfile', JSON.stringify(window.profile));
+};
+
+window.updateEnergy = function() {
+    const maxEnergy = window.profile.energyUpgradeLevel > 0 ? window.profile.maxEnergyUpgraded : window.profile.maxEnergy;
+    if (window.profile.energy < maxEnergy) {
+        window.profile.energy = Math.min(window.profile.energy + 1, maxEnergy);
+        window.updateProfile();
+    }
+};
+
+setInterval(window.updateEnergy, 2000);
+
+window.clickTapButton = function(event) {
+    if (window.profile.energy >= window.profile.multitapLevel) {
+        window.profile.coins += 1;
+        window.profile.energy -= window.profile.multitapLevel;
+        window.profile.clicks++;
+        window.profile.xp += 10;
+        window.checkLevelUp();
+        window.updateProfile();
+        window.updateQuests();
+
+        const tapAnim = document.createElement('div');
+        tapAnim.className = 'tap-animation';
+        tapAnim.innerText = '+1 💰';
+        tapAnim.style.left = `${event.clientX - 20}px`;
+        tapAnim.style.top = `${event.clientY - 50}px`;
+        document.body.appendChild(tapAnim);
+        setTimeout(() => tapAnim.remove(), 1000);
+    } else {
+        window.showNotification('Недостаточно энергии! ⚡');
+    }
+};
+
+window.checkLevelUp = function() {
+    const currentLevel = window.profile.level;
+    const nextLevel = currentLevel + 1;
+    const conditions = window.profile.levelConditions[nextLevel] || { xp: Infinity };
+    const requiredXP = conditions.xp || 0;
+    const requiredQuests = conditions.quests || 0;
+    const requiredUpgrades = conditions.upgrades || 0;
+    const requiredPets = conditions.pets || 0;
+    const requiredClicks = conditions.clicks || 0;
+    const requiredCasino = conditions.casino || 0;
+
+    const questsCompleted = window.profile.completedQuests.length;
+    const upgradesCount = window.profile.ownedItems.real_estate.concat(window.profile.ownedItems.movables, window.profile.ownedItems.upgrades).reduce((total, item) => total + item.count, 0);
+    const petsCount = window.profile.pets.length;
+    const clicksCount = window.profile.clicks;
+    const casinoGames = window.profile.stats.clicker_games + window.profile.stats.roulette_games + window.profile.stats.depim_games;
+
+    if (window.profile.xp >= requiredXP &&
+        questsCompleted >= requiredQuests &&
+        upgradesCount >= requiredUpgrades &&
+        petsCount >= requiredPets &&
+        clicksCount >= requiredClicks &&
+        casinoGames >= requiredCasino &&
+        currentLevel < window.profile.maxLevel) {
+        window.profile.level++;
+        window.profile.xp = 0;
+        let reward = 0;
+        switch (currentLevel) {
+            case 1: reward = 1000; break;
+            case 5: reward = 5000; break;
+            case 10: reward = 10000; break;
+            case 15: reward = 20000; break;
+            case 20: reward = 50000; break;
+            case 25: reward = 100000; break;
+            default: reward = 2000 + (currentLevel * 500);
+        }
+        window.profile.coins += reward;
+        window.showNotification(`Поздравляем! Достигнут уровень ${window.profile.level}! +${reward} монет!`);
+        window.updateProfile();
+    }
+};
+
+window.updateProfile = function() {
+    const progress = Math.floor((window.profile.xp / (window.profile.levelConditions[window.profile.level + 1]?.xp || 1000)) * 100);
+    const topStats = document.getElementById('top-stats');
+    if (topStats) {
+        topStats.innerHTML = `
+            <div id="level-info">
+                <span id="level-display">GOLD ${window.profile.level}/${window.profile.maxLevel}</span>
+                <button id="level-details-btn" class="hk-button" onclick="showLevelDetails()">ℹ️</button>
+                <div id="level-progress" style="width: ${progress}%;"></div>
+                <span id="profit-per-hour">${window.profile.profitPerHour.toLocaleString()} 💰/час</span>
+            </div>
+            <div id="coin-counter-small">💰 ${window.profile.coins.toLocaleString()} | MaКоин: ${window.profile.maCoins}</div>
+            <button id="settings-button" onclick="showOther()">⚙️</button>
+        `;
+    }
+    const mainContent = document.getElementById('main-content');
+    const profileDiv = mainContent.querySelector('.profile-info');
+    if (profileDiv && window.historyStack[window.historyStack.length - 1] === 'main') {
+        profileDiv.innerHTML = `
+            <h1 id="coin-counter">${window.profile.coins.toLocaleString()}</h1>
+            <p>Мультитап: ${window.profile.multitapLevel}/${window.profile.maxMultitap} 👆</p>
+            <p>MaКоин: ${window.profile.maCoins}</p>
+        `;
+    }
+    const energyCounter = document.getElementById('energy-counter');
+    if (energyCounter) {
+        const maxEnergy = window.profile.energyUpgradeLevel > 0 ? window.profile.maxEnergyUpgraded : window.profile.maxEnergy;
+        energyCounter.innerHTML = `${window.profile.energy}/${maxEnergy}`;
+    }
+    window.saveProfile();
+};
+
+window.applyTheme = function() {
+    document.body.className = '';
+    document.body.classList.add(`${window.profile.theme}-theme`);
+};
+
+window.showMain = function() {
+    const progress = Math.floor((window.profile.xp / (window.profile.levelConditions[window.profile.level + 1]?.xp || 1000)) * 100);
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+        <div id="tap-container">
+            <div id="tap-button">
+                <span>😈</span>
+                <div id="energy-counter">${window.profile.energy}/${window.profile.energyUpgradeLevel > 0 ? window.profile.maxEnergyUpgraded : window.profile.maxEnergy}</div>
+            </div>
+        </div>
+        <div class="profile-info">
+            <h1 id="coin-counter">${window.profile.coins.toLocaleString()}</h1>
+            <p>Мультитап: ${window.profile.multitapLevel}/${window.profile.maxMultitap} 👆</p>
+            <p>MaКоин: ${window.profile.maCoins}</p>
+        </div>
+    `;
+    window.historyStack = ['main'];
+    window.updateProfile();
+    window.applyTheme();
+    document.getElementById('tap-button').addEventListener('click', window.clickTapButton);
+    bindButtonEvents();
+    if (typeof window.calculateProfit === 'function') window.calculateProfit(); // Вызов, если определена в ui-main4.js
+};
+
+window.showQuests = function() {
+    const quests = window.getQuests().filter(quest => !window.profile.completedQuests.includes(quest.name));
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Квесты 📋</h2>
+        <div class="quest-list quest-grid">
+            ${quests.length > 0 ? quests.map((quest, index) => `
+                <div class="quest">
+                    <div class="quest-info">
+                        <p>${quest.name}</p>
+                        <p>Прогресс: ${quest.progress}/${quest.target}</p>
+                        <p>Награда: ${quest.reward.amount} ${quest.reward.type === 'coins' ? 'монет 💰' : 'XP 📈'}</p>
+                    </div>
+                    <button class="hk-button ${quest.progress >= quest.target ? '' : 'disabled'}" onclick="claimQuest(${index})">
+                        ${quest.progress >= quest.target ? 'Получить' : 'В процессе'}
+                    </button>
+                </div>
+            `).join('') : '<p>Все квесты выполнены! 🎉</p>'}
+        </div>
+    `;
+    window.historyStack.push('showQuests');
+};
+
+window.getQuests = function() {
+    return [
+        { name: 'Сделай 10 кликов', type: 'clicks', target: 10, progress: window.profile.clicks || 0, reward: { type: 'coins', amount: 500 } },
+        { name: 'Сыграй в казино 1 раз', type: 'casino', target: 1, progress: (window.profile.stats.clicker_games || 0) + (window.profile.stats.roulette_games || 0) + (window.profile.stats.depim_games || 0), reward: { type: 'xp', amount: 100 } },
+        { name: 'Активируй промокод', type: 'promo', target: 1, progress: window.profile.claimedPromoCodes ? window.profile.claimedPromoCodes.length : 0, reward: { type: 'coins', amount: 1000 } },
+        { name: 'Купи предмет', type: 'upgrade', target: 1, progress: window.profile.ownedItems ? window.profile.ownedItems.real_estate.concat(window.profile.ownedItems.movables, window.profile.ownedItems.upgrades).reduce((total, item) => total + item.count, 0) : 0, reward: { type: 'xp', amount: 200 } },
+        { name: 'Купи питомца', type: 'pet', target: 1, progress: window.profile.pets ? window.profile.pets.length : 0, reward: { type: 'coins', amount: 1500 } },
+        { name: 'Улучши питомца', type: 'pet_upgrade', target: 1, progress: window.profile.pets ? window.profile.pets.filter(p => p.level > 1).length : 0, reward: { type: 'xp', amount: 300 } },
+        { name: 'Сыграй в ДепИм 3 раза', type: 'depim', target: 3, progress: window.profile.stats.depim_games || 0, reward: { type: 'coins', amount: 2000 } },
+        { name: 'Заработай 5000 монет', type: 'coins', target: 5000, progress: window.profile.coins || 0, reward: { type: 'xp', amount: 500 } }
+    ];
+};
+
+window.updateQuests = function() {
+    if (window.historyStack[window.historyStack.length - 1] === 'showQuests') {
+        window.showQuests();
+    }
+};
+
+window.claimQuest = function(index) {
+    const quests = window.getQuests().filter(quest => !window.profile.completedQuests.includes(quest.name));
+    const quest = quests[index];
+    if (quest.progress >= quest.target) {
+        if (quest.reward.type === 'coins') {
+            window.profile.coins += quest.reward.amount;
+        } else if (quest.reward.type === 'xp') {
+            window.profile.xp += quest.reward.amount;
+            window.checkLevelUp();
+        }
+        window.profile.stats.quests_completed++;
+        window.profile.completedQuests.push(quest.name);
+        window.showNotification(`Квест "${quest.name}" выполнен! +${quest.reward.amount} ${quest.reward.type === 'coins' ? 'монет 💰' : 'XP 📈'}`);
+        window.updateProfile();
+        window.showQuests();
+    } else {
+        window.showNotification('Квест ещё не выполнен!');
+    }
+};
+
+window.showFriends = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Друзья 👥</h2>
+        <p>Приглашайте друзей и получайте бонусы!</p>
+    `;
+    window.historyStack.push('showFriends');
+};
+
+window.showLevelDetails = function() {
+    const currentLevel = window.profile.level;
+    const nextLevel = currentLevel + 1;
+    const conditions = window.profile.levelConditions[nextLevel] || { xp: 'Максимальный уровень достигнут!' };
+    const requiredXP = conditions.xp || 0;
+    const requiredQuests = conditions.quests || 0;
+    const requiredUpgrades = conditions.upgrades || 0;
+    const requiredPets = conditions.pets || 0;
+    const requiredClicks = conditions.clicks || 0;
+    const requiredCasino = conditions.casino || 0;
+
+    const questsCompleted = window.profile.completedQuests.length;
+    const upgradesCount = window.profile.ownedItems.real_estate.concat(window.profile.ownedItems.movables, window.profile.ownedItems.upgrades).reduce((total, item) => total + item.count, 0);
+    const petsCount = window.profile.pets.length;
+    const clicksCount = window.profile.clicks;
+    const casinoGames = window.profile.stats.clicker_games + window.profile.stats.roulette_games + window.profile.stats.depim_games;
+
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Детали уровня</h2>
+        <div class="level-details">
+            <p>Текущий уровень: ${currentLevel}/27</p>
+            <p>XP: ${window.profile.xp}/${requiredXP}</p>
+            ${requiredQuests > 0 ? `<p>Выполнено квестов: ${questsCompleted}/${requiredQuests}</p>` : ''}
+            ${requiredUpgrades > 0 ? `<p>Куплено предметов: ${upgradesCount}/${requiredUpgrades}</p>` : ''}
+            ${requiredPets > 0 ? `<p>Куплено питомцев: ${petsCount}/${requiredPets}</p>` : ''}
+            ${requiredClicks > 0 ? `<p>Кликов: ${clicksCount}/${requiredClicks}</p>` : ''}
+            ${requiredCasino > 0 ? `<p>Игр в казино: ${casinoGames}/${requiredCasino}</p>` : ''}
+            <p>${conditions.xp === 'Максимальный уровень достигнут!' ? conditions.xp : 'Продолжайте выполнять условия!'}</p>
+        </div>
+    `;
+    window.historyStack.push('showLevelDetails');
+};
+
+// Функция для привязки событий к кнопкам (если используется где-то в коде)
+function bindButtonEvents() {
+    // Здесь можно добавить дополнительные события для кнопок, если нужно
+}
+--- ui-main2.js ---
+
+// ui-main2.js
+window.showShop = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Магазин 🏬</h2>
+        <div class="shop-tabs">
+            <button class="tab-button" onclick="showRealEstate()">Недвижимость 🏠</button>
+            <button class="tab-button" onclick="showMovables()">Движимость 🚗</button>
+            <button class="tab-button" onclick="showPets()">Питомцы 🐾</button>
+            <button class="tab-button" onclick="showUpgrades()">Улучшения ⚙️</button>
+            <button class="tab-button" onclick="showBoosts()">Бусты 🚀</button>
+            <button class="tab-button" onclick="showMaCoins()">MaКоин 💎</button> <!-- Новая вкладка -->
+        </div>
+        <div id="shop-content"></div>
+    `;
+    window.historyStack.push('showShop');
+    document.querySelector('.shop-tabs .tab-button').click();
+    bindTabEvents();
+};
+
+// Инициализация цен MaКоин и их истории
+window.maCoinPriceHistory = window.maCoinPriceHistory || [30000]; // Начальная цена 30,000
+
+window.showRealEstate = function() {
+    document.getElementById('shop-content').innerHTML = `
+        <h3>Недвижимость 🏠</h3>
+        <div class="upgrade-list">
+            ${window.profile.ownedItems.real_estate.map((item, index) => `
+                <div class="upgrade">
+                    <div class="upgrade-icon">🏠</div>
+                    <div class="upgrade-info">
+                        <p>${item.name}</p>
+                        <p>Стоимость: ${item.cost} 💰</p>
+                        <p>В наличии: ${item.count}/${item.maxCount}</p>
+                    </div>
+                    <button class="upgrade-button ${window.profile.coins >= item.cost && item.count < item.maxCount ? '' : 'disabled'}" onclick="buyRealEstate(${index})">
+                        Купить
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
+
+window.buyRealEstate = function(index) {
+    const item = window.profile.ownedItems.real_estate[index];
+    if (window.profile.coins >= item.cost && item.count < item.maxCount) {
+        window.profile.coins -= item.cost;
+        item.count++;
+        window.showNotification(`Куплено: ${item.name}!`);
+        window.updateProfile();
+        window.updateQuests();
+        showRealEstate();
+    } else {
+        window.showNotification('Недостаточно монет или достигнут лимит!');
+    }
+};
+
+window.showMovables = function() {
+    document.getElementById('shop-content').innerHTML = `
+        <h3>Движимость 🚗</h3>
+        <div class="upgrade-list">
+            ${window.profile.ownedItems.movables.map((item, index) => `
+                <div class="upgrade">
+                    <div class="upgrade-icon">🚗</div>
+                    <div class="upgrade-info">
+                        <p>${item.name}</p>
+                        <p>Стоимость: ${item.cost} 💰</p>
+                        <p>В наличии: ${item.count}/${item.maxCount}</p>
+                    </div>
+                    <button class="upgrade-button ${window.profile.coins >= item.cost && item.count < item.maxCount ? '' : 'disabled'}" onclick="buyMovables(${index})">
+                        Купить
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
+
+window.buyMovables = function(index) {
+    const item = window.profile.ownedItems.movables[index];
+    if (window.profile.coins >= item.cost && item.count < item.maxCount) {
+        window.profile.coins -= item.cost;
+        item.count++;
+        window.showNotification(`Куплено: ${item.name}!`);
+        window.updateProfile();
+        window.updateQuests();
+        showMovables();
+    } else {
+        window.showNotification('Недостаточно монет или достигнут лимит!');
+    }
+};
+
+window.showPets = function() {
+    document.getElementById('shop-content').innerHTML = `
+        <h3>Питомцы 🐾</h3>
+        <div class="upgrade-list">
+            ${window.profile.pets.map((pet, index) => `
+                <div class="upgrade">
+                    <div class="upgrade-icon">🐾</div>
+                    <div class="upgrade-info">
+                        <p>${pet.name} (${pet.type})</p>
+                        ${pet.level >= pet.maxLevel ? '<p>Максимальный уровень!</p>' : `<p>Уровень: ${pet.level}/${pet.maxLevel}</p>`}
+                        <p>Стоимость улучшения: ${(pet.level * pet.cost).toLocaleString()} 💰</p>
+                    </div>
+                    <button class="upgrade-button ${window.profile.coins >= (pet.level * pet.cost) && pet.level < pet.maxLevel ? '' : 'disabled'}" onclick="upgradePet(${index})">
+                        Улучшить
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
+
+window.upgradePet = function(index) {
+    const pet = window.profile.pets[index];
+    const upgradeCost = pet.level * pet.cost;
+    if (window.profile.coins >= upgradeCost && pet.level < pet.maxLevel) {
+        window.profile.coins -= upgradeCost;
+        pet.level++;
+        window.showNotification(`Питомец ${pet.name} улучшен до уровня ${pet.level}!`);
+        window.updateProfile();
+        window.updateQuests();
+        showPets();
+    } else {
+        window.showNotification('Недостаточно монет или максимальный уровень!');
+    }
+};
+
+window.showUpgrades = function() {
+    document.getElementById('shop-content').innerHTML = `
+        <h3>Улучшения ⚙️</h3>
+        <div class="upgrade-list">
+            ${window.profile.ownedItems.upgrades.map((item, index) => `
+                <div class="upgrade">
+                    <div class="upgrade-icon">⚙️</div>
+                    <div class="upgrade-info">
+                        <p>${item.name}</p>
+                        <p>Стоимость: ${item.cost} 💰</p>
+                        <p>В наличии: ${item.count}/${item.maxCount}</p>
+                    </div>
+                    <button class="upgrade-button ${window.profile.coins >= item.cost && item.count < item.maxCount ? '' : 'disabled'}" onclick="buyUpgrade(${index})">
+                        Купить
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
+
+window.buyUpgrade = function(index) {
+    const item = window.profile.ownedItems.upgrades[index];
+    if (window.profile.coins >= item.cost && item.count < item.maxCount) {
+        window.profile.coins -= item.cost;
+        item.count++;
+        window.showNotification(`Куплено: ${item.name}!`);
+        window.updateProfile();
+        window.updateQuests();
+        showUpgrades();
+    } else {
+        window.showNotification('Недостаточно монет или достигнут лимит!');
+    }
+};
+
+window.showBoosts = function() {
+    document.getElementById('shop-content').innerHTML = `
+        <h3>Бусты 🚀</h3>
+        <div class="upgrade-list">
+            ${window.profile.upgrades.boosts.map((boost, index) => `
+                <div class="upgrade">
+                    <div class="upgrade-icon">🚀</div>
+                    <div class="upgrade-info">
+                        <p>${boost.name}</p>
+                        <p>Уровень: ${boost.level}</p>
+                        <p>Стоимость: ${boost.cost} 💰</p>
+                    </div>
+                    <button class="upgrade-button ${window.profile.coins >= boost.cost ? '' : 'disabled'}" onclick="buyBoost(${index})">
+                        Купить
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
+
+window.buyBoost = function(index) {
+    const boost = window.profile.upgrades.boosts[index];
+    if (window.profile.coins >= boost.cost) {
+        window.profile.coins -= boost.cost;
+        boost.level++;
+        if (boost.name === 'Energy') {
+            window.profile.energyUpgradeLevel++;
+        } else if (boost.name === 'Multitap') {
+            if (window.profile.multitapLevel < window.profile.maxMultitap) {
+                window.profile.multitapLevel++;
+            }
+        }
+        window.showNotification(`Буст ${boost.name} улучшен до уровня ${boost.level}!`);
+        window.updateProfile();
+        showBoosts();
+    } else {
+        window.showNotification('Недостаточно монет!');
+    }
+};
+
+// Новая вкладка MaКоин
+window.showMaCoins = function() {
+    const currentPrice = window.profile.maCoinPrice;
+    document.getElementById('shop-content').innerHTML = `
+        <h3>MaКоин 💎</h3>
+        <div class="upgrade-list">
+            <div class="upgrade">
+                <div class="upgrade-icon">💎</div>
+                <div class="upgrade-info">
+                    <p>Текущая цена: ${currentPrice.toLocaleString()} 💰</p>
+                    <p>В наличии: ${window.profile.maCoins}</p>
+                    <input type="number" id="maCoinQuantity" min="1" value="1" style="width: 100px; padding: 5px; margin: 5px 0;" placeholder="Количество">
+                </div>
+                <button class="upgrade-button ${window.profile.coins >= currentPrice ? '' : 'disabled'}" onclick="buyMaCoin()">
+                    Купить
+                </button>
+                <button class="upgrade-button ${window.profile.maCoins > 0 ? '' : 'disabled'}" onclick="sellMaCoin()">
+                    Продать
+                </button>
+            </div>
+        </div>
+        <div id="price-chart" style="margin-top: 20px;">
+            <canvas id="maCoinChart" width="300" height="150"></canvas>
+        </div>
+    `;
+    updateMaCoinChart();
+};
+
+// Покупка MaКоин
+window.buyMaCoin = function() {
+    const quantity = parseInt(document.getElementById('maCoinQuantity').value) || 1;
+    const totalCost = window.profile.maCoinPrice * quantity;
+    if (quantity <= 0) {
+        window.showNotification('Введите корректное количество!');
+        return;
+    }
+    if (window.profile.coins >= totalCost) {
+        window.profile.coins -= totalCost;
+        window.profile.maCoins += quantity;
+        window.showNotification(`Куплено ${quantity} MaКоин за ${totalCost.toLocaleString()} монет!`);
+        window.updateProfile();
+        window.showMaCoins();
+    } else {
+        window.showNotification('Недостаточно монет!');
+    }
+};
+
+// Продажа MaКоин
+window.sellMaCoin = function() {
+    const quantity = parseInt(document.getElementById('maCoinQuantity').value) || 1;
+    if (quantity <= 0) {
+        window.showNotification('Введите корректное количество!');
+        return;
+    }
+    if (window.profile.maCoins >= quantity) {
+        window.profile.maCoins -= quantity;
+        const totalEarned = window.profile.maCoinPrice * quantity;
+        window.profile.coins += totalEarned;
+        window.showNotification(`Продано ${quantity} MaКоин за ${totalEarned.toLocaleString()} монет!`);
+        window.updateProfile();
+        window.showMaCoins();
+    } else {
+        window.showNotification('Недостаточно MaКоин для продажи!');
+    }
+};
+
+// Обновление цены MaКоин (каждые 10 минут)
+window.updateMaCoinPrice = function() {
+    const fluctuation = Math.random() * 40000 - 20000; // ±20,000
+    window.profile.maCoinPrice = Math.max(15000, Math.min(100000, window.profile.maCoinPrice + fluctuation)); // Ограничение: 15,000–100,000
+    window.profile.maCoinPrice = Math.floor(window.profile.maCoinPrice);
+    window.maCoinPriceHistory.push(window.profile.maCoinPrice);
+    if (window.maCoinPriceHistory.length > 60) window.maCoinPriceHistory.shift(); // Храним историю за 60 обновлений (10 часов)
+    if (window.historyStack[window.historyStack.length - 1] === 'showShop') {
+        const shopContent = document.getElementById('shop-content');
+        if (shopContent && shopContent.innerHTML.includes('MaКоин')) {
+            window.showMaCoins();
+        }
+    }
+};
+
+setInterval(window.updateMaCoinPrice, 600000); // 10 минут = 600,000 мс
+
+// График цен MaКоин
+window.maCoinPriceHistory = window.maCoinPriceHistory || [30000]; // Начальная цена 30,000
+
+window.updateMaCoinChart = function() {
+    const ctx = document.getElementById('maCoinChart')?.getContext('2d');
+    if (!ctx) return;
+
+    const prices = window.maCoinPriceHistory;
+    const labels = prices.map((_, index) => index);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Цена MaКоин',
+                data: prices,
+                borderColor: '#ffcc00',
+                backgroundColor: 'rgba(255, 204, 0, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    display: false
+                },
+                y: {
+                    min: minPrice - (maxPrice - minPrice) * 0.1,
+                    max: maxPrice + (maxPrice - minPrice) * 0.1
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+};
+
+// Обновление графика каждые 10 секунд (если вкладка открыта)
+setInterval(() => {
+    if (window.historyStack[window.historyStack.length - 1] === 'showShop') {
+        const shopContent = document.getElementById('shop-content');
+        if (shopContent && shopContent.innerHTML.includes('MaКоин')) {
+            window.showMaCoins();
+        }
+    }
+}, 10000);
+--- ui-main3.js ---
+
+window.showGames = function() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button hk-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Казино 🎰</h2>
+        <div class="game-tabs">
+            <button class="tab-button" onclick="showBlackjack()">21 очко 🎴</button>
+            <button class="tab-button" onclick="showRoulette()">Рулетка 🎡</button>
+            <button class="tab-button" onclick="showDepIm()">ДепИм ⚔️</button>
+        </div>
+        <div id="game-content"></div>
+    `;
+    window.historyStack.push('showGames');
+    document.querySelector('.game-tabs .tab-button').click();
+};
+
+window.showBlackjack = function() {
+    window.blackjackState = window.blackjackState || { playerCards: [], dealerCards: [], bet: 0, gameOver: true, lastBet: '' };
+    document.getElementById('game-content').innerHTML = `
+        <h3>21 очко 🎴</h3>
+        <div class="blackjack-table">
+            <div class="cards-section">
+                <h4>Дилер: <span id="dealer-score">0</span></h4>
+                <div class="dealer-cards"></div>
+                <h4>Игрок: <span id="player-score">0</span></h4>
+                <div class="player-cards"></div>
+            </div>
+            <div class="bet-section">
+                <input type="number" id="blackjack-bet" placeholder="Ставка (мин. 10)" min="10" value="${window.blackjackState.lastBet}">
+                <button class="hk-button" onclick="startBlackjack()">Начать игру</button>
+            </div>
+            <div class="actions" id="blackjack-actions" style="display: none;">
+                <button class="hk-button" onclick="hitBlackjack()">Взять карту</button>
+                <button class="hk-button" onclick="standBlackjack()">Остановиться</button>
+            </div>
+        </div>
+    `;
+    window.historyStack.push('showBlackjack');
+    if (!window.blackjackState.gameOver) {
+        renderBlackjack();
+        document.getElementById('blackjack-actions').style.display = 'flex';
+    }
+};
+
+function calculateScore(cards) {
+    let score = 0;
+    let aces = 0;
+    cards.forEach(card => {
+        if (card.value === 'A') {
+            aces++;
+            score += 11;
+        } else if (['K', 'Q', 'J'].includes(card.value)) {
+            score += 10;
+        } else {
+            score += parseInt(card.value);
+        }
+    });
+    while (score > 21 && aces > 0) {
+        score -= 10;
+        aces--;
+    }
+    return score;
+}
+
+function renderBlackjack() {
+    const playerCards = document.querySelector('.player-cards');
+    const dealerCards = document.querySelector('.dealer-cards');
+    const playerScore = document.getElementById('player-score');
+    const dealerScore = document.getElementById('dealer-score');
+
+    playerCards.innerHTML = window.blackjackState.playerCards.map(card => `
+        <div class="card ${card.suit === '♥' || card.suit === '♦' ? 'red' : 'black'}" data-value="${card.value}${card.suit}">
+            ${card.value}${card.suit}
+        </div>
+    `).join('');
+    dealerCards.innerHTML = window.blackjackState.dealerCards.map((card, index) => `
+        <div class="card ${index === 0 && !window.blackjackState.gameOver ? 'hidden' : (card.suit === '♥' || card.suit === '♦' ? 'red' : 'black')}" data-value="${index === 0 && !window.blackjackState.gameOver ? '' : card.value + card.suit}">
+            ${index === 0 && !window.blackjackState.gameOver ? '🂠' : card.value + card.suit}
+        </div>
+    `).join('');
+
+    playerScore.innerText = calculateScore(window.blackjackState.playerCards);
+    dealerScore.innerText = window.blackjackState.gameOver ? calculateScore(window.blackjackState.dealerCards) : calculateScore([window.blackjackState.dealerCards[1]]);
+
+    animateCards();
+}
+
+window.startBlackjack = function() {
+    const betInput = document.getElementById('blackjack-bet');
+    const bet = parseInt(betInput.value);
+    if (bet >= 10 && window.profile.coins >= bet) {
+        window.profile.coins -= bet;
+        window.blackjackState.bet = bet;
+        window.blackjackState.lastBet = bet;
+        window.blackjackState.playerCards = [];
+        window.blackjackState.dealerCards = [];
+        window.blackjackState.gameOver = false;
+
+        const suits = ['♠', '♣', '♥', '♦'];
+        const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        const deck = [];
+        suits.forEach(suit => values.forEach(value => deck.push({ suit, value })));
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+
+        window.blackjackState.playerCards.push(deck.pop(), deck.pop());
+        window.blackjackState.dealerCards.push(deck.pop(), deck.pop());
+
+        document.getElementById('blackjack-actions').style.display = 'flex';
+        renderBlackjack();
+        window.updateProfile();
+    } else {
+        window.showNotification('Неверная ставка или недостаточно монет!');
+    }
+};
+
+window.hitBlackjack = function() {
+    const suits = ['♠', '♣', '♥', '♦'];
+    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    const deck = [];
+    suits.forEach(suit => values.forEach(value => deck.push({ suit, value })));
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    window.blackjackState.playerCards.push(deck.pop());
+    const playerScore = calculateScore(window.blackjackState.playerCards);
+    renderBlackjack();
+    if (playerScore > 21) {
+        window.blackjackState.gameOver = true;
+        window.showNotification('Перебор! Вы проиграли.');
+        document.getElementById('blackjack-actions').style.display = 'none';
+        window.profile.stats.clicker_games++;
+        window.updateProfile();
+        window.updateQuests();
+    }
+};
+
+window.standBlackjack = function() {
+    window.blackjackState.gameOver = true;
+    let dealerScore = calculateScore(window.blackjackState.dealerCards);
+    const playerScore = calculateScore(window.blackjackState.playerCards);
+
+    const suits = ['♠', '♣', '♥', '♦'];
+    const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+    const deck = [];
+    suits.forEach(suit => values.forEach(value => deck.push({ suit, value })));
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+
+    while (dealerScore < 17) {
+        window.blackjackState.dealerCards.push(deck.pop());
+        dealerScore = calculateScore(window.blackjackState.dealerCards);
+    }
+
+    renderBlackjack();
+    document.getElementById('blackjack-actions').style.display = 'none';
+    window.profile.stats.clicker_games++;
+
+    if (dealerScore > 21 || playerScore > dealerScore) {
+        window.profile.coins += window.blackjackState.bet * 2;
+        window.showNotification(`Победа! +${window.blackjackState.bet * 2} монет!`);
+    } else if (playerScore === dealerScore) {
+        window.profile.coins += window.blackjackState.bet;
+        window.showNotification('Ничья! Ставка возвращена.');
+    } else {
+        window.showNotification('Проигрыш!');
+    }
+
+    window.updateProfile();
+    window.updateQuests();
+};
+
+window.showRoulette = function() {
+    window.rouletteState = window.rouletteState || { bet: 0, type: 'number', value: 0, lastBet: '' };
+    document.getElementById('game-content').innerHTML = `
+        <h3>Рулетка 🎡</h3>
+        <div class="roulette-table">
+            <div class="bet-section">
+                <input type="number" id="roulette-bet" placeholder="Ставка (мин. 10)" min="10" value="${window.rouletteState.lastBet}">
+                <select id="roulette-type">
+                    <option value="number">Число (0-36)</option>
+                    <option value="color">Цвет (red/black)</option>
+                    <option value="even_odd">Чёт/Нечёт</option>
+                </select>
+                <input type="text" id="roulette-value" placeholder="Значение (число, red/black, even/odd)">
+                <button class="hk-button" onclick="spinRoulette()">Крутить</button>
+            </div>
+            <div class="roulette-wheel" id="roulette-wheel">
+                <div class="wheel-inner"></div>
+            </div>
+        </div>
+    `;
+    window.historyStack.push('showRoulette');
+};
+
+window.spinRoulette = function() {
+    const betInput = document.getElementById('roulette-bet');
+    const typeSelect = document.getElementById('roulette-type');
+    const valueInput = document.getElementById('roulette-value');
+    const bet = parseInt(betInput.value);
+    const type = typeSelect.value;
+    const value = valueInput.value.toLowerCase();
+
+    if (bet >= 10 && window.profile.coins >= bet && validateRouletteBet(type, value)) {
+        window.profile.coins -= bet;
+        window.rouletteState.bet = bet;
+        window.rouletteState.lastBet = bet;
+        window.rouletteState.type = type;
+        window.rouletteState.value = value;
+
+        const result = Math.floor(Math.random() * 37);
+        const isRed = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(result);
+        const isBlack = result !== 0 && !isRed;
+        const isEven = result !== 0 && result % 2 === 0;
+
+        let win = false;
+        let multiplier = 1;
+        if (type === 'number' && parseInt(value) === result) {
+            win = true;
+            multiplier = 36;
+        } else if (type === 'color' && ((value === 'red' && isRed) || (value === 'black' && isBlack))) {
+            win = true;
+            multiplier = 2;
+        } else if (type === 'even_odd' && ((value === 'even' && isEven) || (value === 'odd' && !isEven && result !== 0))) {
+            win = true;
+            multiplier = 2;
+        }
+
+        const wheel = document.getElementById('roulette-wheel');
+        wheel.classList.add('spinning');
+        setTimeout(() => {
+            wheel.classList.remove('spinning');
+            if (win) {
+                window.profile.coins += bet * multiplier;
+                window.showNotification(`Победа! +${bet * multiplier} монет!`);
+            } else {
+                window.showNotification('Проигрыш!');
+            }
+            window.profile.stats.roulette_games++;
+            window.updateProfile();
+            showRoulette();
+            window.updateQuests();
+        }, 2000);
+    } else {
+        window.showNotification('Неверная ставка или недостаточно монет!');
+    }
+};
+
+function validateRouletteBet(type, value) {
+    if (type === 'number') return !isNaN(value) && value >= 0 && value <= 36;
+    if (type === 'color') return ['red', 'black'].includes(value);
+    if (type === 'even_odd') return ['even', 'odd'].includes(value);
+    return false;
+}
+
+window.showDepIm = function() {
+    window.depImState = window.depImState || { bet: 0, asset: null, type: '', lastBet: '', doubleDown: false, doubleDownAsset: null };
+    document.getElementById('game-content').innerHTML = `
+        <h3>ДепИм ⚔️</h3>
+        <div class="depim-arena">
+            <div class="bet-section">
+                <input type="number" id="depim-bet" placeholder="Ставка (мин. 10)" min="10" value="${window.depImState.lastBet}">
+                <select id="depim-asset-type">
+                    <option value="real_estate">Недвижимость</option>
+                    <option value="movables">Движимость</option>
+                    <option value="upgrades">Улучшения</option>
+                </select>
+                <select id="depim-asset">
+                    <option value="">Выбери предмет</option>
+                </select>
+                <button class="hk-button" onclick="startDepIm()">Начать бой</button>
+            </div>
+            <div class="arena-visual" id="arena-visual"></div>
+            <div id="double-down-section" style="display: none;">
+                <h4>Проиграли! Хотите додеп?</h4>
+                <select id="double-down-asset">
+                    <option value="">Выбери предмет для додепа</option>
+                </select>
+                <button class="hk-button" onclick="doubleDownDepIm()">Поставить ещё (x4 награда)</button>
+            </div>
+        </div>
+    `;
+    const assetTypeSelect = document.getElementById('depim-asset-type');
+    const assetSelect = document.getElementById('depim-asset');
+    const doubleDownSelect = document.getElementById('double-down-asset');
+
+    assetTypeSelect.addEventListener('change', () => {
+        const type = assetTypeSelect.value;
+        assetSelect.innerHTML = '<option value="">Выбери предмет</option>';
+        doubleDownSelect.innerHTML = '<option value="">Выбери предмет для додепа</option>';
+        window.profile.ownedItems[type].forEach((item, index) => {
+            if (item.count > 0) {
+                assetSelect.innerHTML += `<option value="${index}">${item.name} (${item.count} шт.)</option>`;
+                doubleDownSelect.innerHTML += `<option value="${index}">${item.name} (${item.count} шт.)</option>`;
+            }
+        });
+    });
+
+    window.historyStack.push('showDepIm');
+};
+
+window.startDepIm = function() {
+    const betInput = document.getElementById('depim-bet');
+    const bet = parseInt(betInput.value);
+    const type = document.getElementById('depim-asset-type').value;
+    const assetIndex = document.getElementById('depim-asset').value;
+
+    if (bet >= 10 && window.profile.coins >= bet && assetIndex !== '') {
+        window.profile.coins -= bet;
+        window.depImState.bet = bet;
+        window.depImState.lastBet = bet;
+        window.depImState.type = type;
+        window.depImState.asset = assetIndex;
+        window.depImState.doubleDown = false;
+
+        const arena = document.getElementById('arena-visual');
+        arena.classList.add('fighting');
+        setTimeout(() => {
+            arena.classList.remove('fighting');
+            const winChance = 0.5; // Шанс победы 50%
+            const win = Math.random() < winChance;
+            window.profile.stats.depim_games++;
+
+            if (win) {
+                const item = window.profile.ownedItems[type][assetIndex];
+                item.count++; // Добавляем ещё один предмет
+                window.showNotification(`Победа! Вы получили ещё один ${item.name}!`);
+                document.getElementById('double-down-section').style.display = 'none';
+            } else {
+                window.showNotification('Проигрыш! Хотите сделать додеп?');
+                document.getElementById('double-down-section').style.display = 'block';
+            }
+
+            window.updateProfile();
+            showDepIm();
+            window.updateQuests();
+        }, 2000);
+    } else {
+        window.showNotification('Неверная ставка, предмет или недостаточно монет!');
+    }
+};
+
+window.doubleDownDepIm = function() {
+    const doubleDownAsset = document.getElementById('double-down-asset').value;
+    if (doubleDownAsset !== '') {
+        window.depImState.doubleDown = true;
+        window.depImState.doubleDownAsset = doubleDownAsset;
+
+        const arena = document.getElementById('arena-visual');
+        arena.classList.add('fighting');
+        setTimeout(() => {
+            arena.classList.remove('fighting');
+            const winChance = 0.5; // Шанс победы 50%
+            const win = Math.random() < winChance;
+            window.profile.stats.depim_games++;
+
+            if (win) {
+                const type = window.depImState.type;
+                const assetIndex = window.depImState.asset;
+                const item = window.profile.ownedItems[type][assetIndex];
+                item.count += 4; // Награда х4
+                window.showNotification(`Додеп успешен! Вы получили ${item.count} ${item.name}!`);
+            } else {
+                window.showNotification('Додеп не удался. Проигрыш!');
+            }
+
+            window.depImState.doubleDown = false;
+            document.getElementById('double-down-section').style.display = 'none';
+            window.updateProfile();
+            showDepIm();
+            window.updateQuests();
+        }, 2000);
+    } else {
+        window.showNotification('Выберите предмет для додепа!');
+    }
+};
+
+function bindTabEvents() {
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', () => {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
+}
+
+function animateCards() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.animationDelay = `${index * 0.2}s`;
+        card.classList.add('deal');
+    });
+}
+
+function animateRoulette() {
+    const wheel = document.getElementById('roulette-wheel');
+    wheel.innerHTML = '<div class="wheel-inner"></div>';
+}
+--- ui-main4.js ---
+
+// ui-main4.js
+window.calculateProfit = function() {
+    let profit = 0;
+
+    // Прибыль от недвижимости (4% от стоимости в час за единицу)
+    profit += window.profile.ownedItems.real_estate.reduce((sum, item) => sum + (item.count * (item.cost * 0.04)), 0);
+
+    // Прибыль от движимости (4% от стоимости в час за единицу)
+    profit += window.profile.ownedItems.movables.reduce((sum, item) => sum + (item.count * (item.cost * 0.04)), 0);
+
+    // Прибыль от улучшений (4% от стоимости в час за единицу)
+    profit += window.profile.ownedItems.upgrades.reduce((sum, item) => sum + (item.count * (item.cost * 0.04)), 0);
+
+    // Прибыль от питомцев (4% от базовой стоимости * уровень в час)
+    profit += window.profile.pets.reduce((sum, pet) => sum + ((pet.cost * 0.04) * pet.level), 0);
+
+    window.profile.profitPerHour = Math.floor(profit);
+};
+
+setInterval(() => {
+    const profitPerSecond = window.profile.profitPerHour / 3600;
+    window.profile.coins = Math.floor(window.profile.coins + profitPerSecond * 10);
+    window.updateProfile();
+    window.calculateProfit();
+}, 10000);
+--- upgrades.js ---
+
+// upgrades.js
+window.getUpgrades = function() {
+    return [
+        { name: 'Оптимизация', count: 0, cost: 1000, maxCount: 15 },
+        { name: 'Автоматизация', count: 0, cost: 2000, maxCount: 15 },
+        { name: 'Суперпроцессор', count: 0, cost: 5000, maxCount: 15 },
+        { name: 'Микрочип', count: 0, cost: 7000, maxCount: 15 },
+        { name: 'Нейросеть', count: 0, cost: 10000, maxCount: 15 },
+        { name: 'Квантовый модуль', count: 0, cost: 15000, maxCount: 15 },
+        { name: 'Блокчейн', count: 0, cost: 20000, maxCount: 15 },
+        { name: 'Сервер', count: 0, cost: 25000, maxCount: 15 },
+        { name: 'Облако', count: 0, cost: 30000, maxCount: 15 },
+        { name: 'ИИ', count: 0, cost: 35000, maxCount: 15 },
+        { name: 'Датчик', count: 0, cost: 40000, maxCount: 15 },
+        { name: 'Робот', count: 0, cost: 45000, maxCount: 15 },
+        { name: 'Суперкомпьютер', count: 0, cost: 50000, maxCount: 15 },
+        { name: 'Кластер', count: 0, cost: 55000, maxCount: 15 },
+        { name: 'Антенна', count: 0, cost: 60000, maxCount: 15 },
+        { name: 'Спутник', count: 0, cost: 65000, maxCount: 15 },
+        { name: 'Ракета', count: 0, cost: 70000, maxCount: 15 },
+        { name: 'Космостанция', count: 0, cost: 75000, maxCount: 15 },
+        { name: 'Лазер', count: 0, cost: 80000, maxCount: 15 },
+        { name: 'Реактор', count: 0, cost: 85000, maxCount: 15 },
+        { name: 'Генератор', count: 0, cost: 90000, maxCount: 15 },
+        { name: 'Турбина', count: 0, cost: 95000, maxCount: 15 },
+        { name: 'Солнечная панель', count: 0, cost: 100000, maxCount: 15 },
+        { name: 'Ветряк', count: 0, cost: 110000, maxCount: 15 },
+        { name: 'Гидроэлектростанция', count: 0, cost: 120000, maxCount: 15 }
+    ];
+};
+--- utils.js ---
+
+// utils.js
+function bindButtonEvents() {
+    document.querySelectorAll('.hk-button, .tab-button').forEach(button => {
+        button.removeEventListener('touchstart', handleTouchStart);
+        button.removeEventListener('touchend', handleTouchEnd);
+        button.removeEventListener('click', handleClick);
+        button.addEventListener('touchstart', handleTouchStart);
+        button.addEventListener('touchend', handleTouchEnd);
+        button.addEventListener('click', handleClick);
+    });
+}
+
+function handleTouchStart(event) {
+    event.target.classList.add('active');
+}
+
+function handleTouchEnd(event) {
+    event.target.classList.remove('active');
+}
+
+function handleClick(event) {
+    const action = event.target.getAttribute('data-action');
+    if (action && window[action]) {
+        window[action]();
+    } else if (action) {
+        console.warn(`Function ${action} is not defined.`); // Изменено на warn вместо error
+    }
+}
+
+function observeContentChanges() {
+    const mainContent = document.getElementById('main-content');
+    const observer = new MutationObserver(() => {
+        bindButtonEvents();
+    });
+    observer.observe(mainContent, { childList: true, subtree: true });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    bindButtonEvents();
+    observeContentChanges();
+});
+--- style.css ---
+
+/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    color: #ffffff;
+    background: linear-gradient(180deg, #1C2526 0%, #000000 100%);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#top-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(42, 52, 53, 0.8);
+    border-bottom: 1px solid #3A4445;
+}
+
+#coin-counter-small {
+    font-size: 14px;
+    color: #FFD700;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#settings-button {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+#settings-button:hover {
+    color: #FF8C00;
+}
+
+#main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#tap-container {
+    position: relative;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#tap-button {
+    width: 27.5vh;
+    height: 27.5vh;
+    background: radial-gradient(circle, rgba(255, 140, 0, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    animation: ringPulse 2s infinite ease-in-out;
+    position: relative;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#tap-button:focus {
+    outline: none;
+}
+
+#tap-button span {
+    display: inline-block;
+    font-size: 16.5vh;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(255, 140, 0, 0.5);
+}
+
+#tap-button:active {
+    background: radial-gradient(circle, rgba(255, 0, 0, 0.5) 0%, transparent 70%);
+}
+
+@keyframes ringPulse {
+    0% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(255, 140, 0, 0.7); }
+    100% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.5); }
+}
+
+#energy-counter {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(42, 52, 53, 0.8);
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #FFD700;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+#energy-counter::before {
+    content: '⚡';
+    font-size: 14px;
+}
+
+.tap-animation {
+    position: absolute;
+    font-size: 18px;
+    color: #FFD700;
+    animation: floatTap 1s ease-out forwards;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+@keyframes floatTap {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(0, -50px) scale(1.5); }
+}
+
+#coin-counter {
+    font-size: 36px;
+    font-weight: 700;
+    color: #FFD700;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+}
+
+#coin-counter::before {
+    content: '💰';
+    font-size: 32px;
+}
+
+#level-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #2A3435;
+    border-radius: 8px;
+    margin: 5px;
+}
+
+#level-info span {
+    font-size: 12px;
+    color: #FFD700;
+    font-weight: 700;
+}
+
+#profit-per-hour {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#profit-per-hour::before {
+    content: '📈';
+    font-size: 18px;
+}
+
+#level-progress {
+    width: 80px;
+    height: 6px;
+    background: #3A4445;
+    border-radius: 3px;
+    margin: 0 10px;
+    position: relative;
+}
+
+#level-progress::before {
+    content: '';
+    position: absolute;
+    width: 30%;
+    height: 100%;
+    background: #FF8C00;
+    border-radius: 3px;
+}
+
+.nav-bar {
+    display: flex;
+    gap: 5px;
+    padding: 10px;
+    background: rgba(42, 52, 53, 0.8);
+    border-radius: 8px;
+    margin: 5px;
+}
+
+#bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1C2526;
+    border-top: 1px solid #3A4445;
+    padding: 10px 15px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.tab-button {
+    background: #3A4445;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    margin: 5px;
+}
+
+.tab-button.active {
+    background: #FF8C00;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.shop-tabs, .game-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.upgrade-list, .quest-list {
+    width: 100%;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-bottom: 80px; /* Поднимаем контент над хот-баром */
+}
+
+.upgrade, .quest {
+    background: linear-gradient(180deg, #2A3435 0%, #1C2526 100%);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: opacity 0.5s, transform 0.3s; /* Добавлено для анимации исчезновения */
+}
+
+.upgrade.completed, .quest.completed {
+    opacity: 0;
+    transform: translateY(20px); /* Анимация исчезновения */
+}
+
+.upgrade-icon {
+    font-size: 40px;
+}
+
+.upgrade-info, .quest-info {
+    flex: 1;
+}
+
+.upgrade-info p, .quest-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.upgrade-info p:first-child, .quest-info p:first-child {
+    font-weight: 700;
+}
+
+.upgrade-button {
+    background: linear-gradient(180deg, #FF8C00, #FFD700);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.upgrade-button.disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.upgrade-button:not(.disabled):hover {
+    background: linear-gradient(180deg, #FFA500, #FFE066);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.upgrade-button:active {
+    transform: scale(0.95);
+}
+
+.hk-button {
+    background: linear-gradient(180deg, #FF8C00, #FFD700);
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hk-button:hover {
+    background: linear-gradient(180deg, #FFA500, #FFE066);
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.hk-button.disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.hk-button:active {
+    transform: scale(0.95);
+}
+
+.back-button {
+    display: block;
+    margin: 10px auto;
+}
+
+.nav-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 9px;
+    cursor: pointer;
+    padding: 10px;
+    flex: 1;
+    min-height: 60px;
+    min-width: 50px;
+    box-sizing: border-box;
+}
+
+.nav-button span {
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-button.active {
+    color: #FF8C00;
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.nav-button span::before {
+    display: block;
+    font-size: 32px;
+    margin-bottom: 5px;
+}
+
+.nav-button[data-action="showMain"] span::before { content: '🏦'; }
+.nav-button[data-action="showGames"] span::before { content: '🎰'; }
+.nav-button[data-action="showRewards"] span::before { content: '🎁'; }
+.nav-button[data-action="showQuests"] span::before { content: '📋'; }
+.nav-button[data-action="showFriends"] span::before { content: '👥'; }
+.nav-button[data-action="showBonuses"] span::before { content: '🎁'; }
+.nav-button[data-action="showShop"] span::before { content: '🏬'; }
+.nav-button[data-action="showBoosts"] span::before { content: '🚀'; }
+
+.nav-button.active span::before {
+    text-shadow: 0 0 10px rgba(255, 140, 0, 0.5);
+}
+
+.nav-button[data-action="showQuests"] span::before {
+    font-size: 32px;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2A3435;
+    color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    z-index: 1000;
+    animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+#shop-content, #game-content {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+.blackjack-table, .roulette-table, .depim-arena {
+    background: #2A3435;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+    position: relative;
+    padding-bottom: 100px;
+}
+
+.bet-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.bet-section input, .bet-section select {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #3A4445;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.cards-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.player-cards, .dealer-cards {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    width: 80px;
+    height: 120px;
+    background: #ffffff;
+    border: 2px solid #FFD700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.card.red { color: #FF0000; }
+.card.black { color: #000000; }
+
+.card.hidden {
+    background: linear-gradient(45deg, #3A4445, #2A3435);
+    color: #ffffff;
+    border: 2px solid #666;
+}
+
+.card::before, .card::after {
+    content: attr(data-value);
+    position: absolute;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.card::before {
+    top: 5px;
+    left: 5px;
+}
+
+.card::after {
+    bottom: 5px;
+    right: 5px;
+    transform: rotate(180deg);
+}
+
+.card.deal {
+    animation: dealCard 0.5s ease-out;
+}
+
+@keyframes dealCard {
+    0% { transform: translateY(-100px) rotate(10deg); opacity: 0; }
+    100% { transform: translateY(0) rotate(0); opacity: 1; }
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.roulette-wheel {
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, #FF8C00, #FFD700);
+    border-radius: 50%;
+    margin: 20px auto;
+    position: relative;
+    transition: transform 2s ease-out;
+}
+
+.roulette-wheel.spinning {
+    transform: rotate(720deg);
+}
+
+.wheel-inner {
+    width: 80%;
+    height: 80%;
+    background: #2A3435;
+    border-radius: 50%;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+}
+
+.depim-arena {
+    position: relative;
+}
+
+.arena-visual {
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(45deg, #3A4445, #2A3435);
+    border-radius: 5px;
+    margin-top: 20px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.arena-visual.fighting {
+    animation: shake 0.5s infinite;
+}
+
+.arena-visual::before, .arena-visual::after {
+    font-size: 40px;
+    position: absolute;
+    transition: transform 0.5s ease;
+}
+
+.arena-visual::before {
+    content: '🏠'; /* Представляет игрока */
+    left: 20px;
+}
+
+.arena-visual::after {
+    content: '🤖'; /* Представляет противника */
+    right: 20px;
+}
+
+.arena-visual.fighting::before {
+    animation: attackLeft 1s infinite;
+}
+
+.arena-visual.fighting::after {
+    animation: attackRight 1s infinite;
+}
+
+@keyframes attackLeft {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(50px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes attackRight {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-50px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
+
+.promo-section {
+    background: #2A3435;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: center;
+    padding-bottom: 80px;
+}
+
+.promo-section input {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background: #3A4445;
+    color: #ffffff;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+.quest-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+#level-details-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    margin: 0 5px;
+    height: 28px;
+}
+
+.level-details {
+    background: #2A3435;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    margin: 20px auto;
+    text-align: left;
+    color: #ffffff;
+    padding-bottom: 80px;
+}
+
+.level-details p {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+@media (max-width: 600px) {
+    .quest-list {
+        grid-template-columns: 1fr;
+    }
+
+    #tap-button { width: 27.5vh; height: 27.5vh; }
+    #tap-button span { font-size: 16.5vh; }
+    #coin-counter { font-size: 32px; }
+    #coin-counter::before { font-size: 28px; }
+    #level-info { font-size: 10px; }
+    #profit-per-hour { font-size: 12px; }
+    .hk-button { font-size: 14px; padding: 8px 12px; }
+    .tab-button { font-size: 12px; padding: 6px 12px; }
+    .nav-button { font-size: 8px; }
+    .nav-button span::before { font-size: 30px; }
+    .card { width: 60px; height: 90px; font-size: 20px; }
+    .card::before, .card::after { font-size: 12px; }
+}
+
+@media (min-width: 601px) and (max-width: 1024px) {
+    #tap-button { width: 22vw; height: 22vw; }
+    #tap-button span { font-size: 13.2vw; }
+    #coin-counter { font-size: 40px; }
+    #level-info { font-size: 14px; }
+    #profit-per-hour { font-size: 16px; }
+    .nav-button { font-size: 10px; }
+    .nav-button span::before { font-size: 34px; }
+}
+
+@media (min-width: 1025px) {
+    #tap-button { width: 330px; height: 330px; }
+    #tap-button span { font-size: 198px; }
+    #coin-counter { font-size: 48px; }
+    #level-info { font-size: 16px; }
+    #profit-per-hour { font-size: 18px; }
+    .nav-button { font-size: 12px; }
+    .nav-button span::before { font-size: 38px; }
+}
+--- index.html ---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hamster Kombat</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREQAAAAAAEAAAEAAAAAEAAAABAAAAEAAAAAAQAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAP+AAAH/gAAB/4AAAf+AAAP/AAAB/4AAA/+AAAP/gAAD/4AAA/+AAAP/wAAD/8AAA//gAAP/4AAA/+AAAP/gAAD/4AA" type="image/x-icon">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Подключение Chart.js -->
+</head>
+<body>
+    <div id="top-stats">
+        <div id="level-info">
+            <span id="level-display">GOLD 1/27</span>
+            <button id="level-details-btn" class="hk-button" onclick="showLevelDetails()">ℹ️</button>
+            <div id="level-progress"></div>
+            <span id="profit-per-hour">0</span>
+        </div>
+        <button id="settings-button" onclick="showOther()">⚙️</button>
+    </div>
+    <div id="main-content">
+        <button class="back-button hk-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+        <div id="tap-container">
+            <div id="tap-button">
+                <span>😈</span>
+                <div id="energy-counter">100/100</div>
+            </div>
+        </div>
+    </div>
+    <div id="bottom-bar" class="nav-bar">
+        <div style="display: flex; flex: 1;">
+            <button class="nav-button active" data-action="showMain">
+                <span>Биржа</span>
+            </button>
+            <button class="nav-button" data-action="showGames">
+                <span>Казино</span>
+            </button>
+            <button class="nav-button" data-action="showQuests">
+                <span>Квесты 📋</span>
+            </button>
+            <button class="nav-button" data-action="showFriends">
+                <span>Друзья</span>
+            </button>
+            <button class="nav-button" data-action="showBonuses">
+                <span>Бонусы 🎁</span>
+            </button>
+            <button class="nav-button" data-action="showShop">
+                <span>Магазин 🏬</span>
+            </button>
+        </div>
+        <div style="display: flex; flex: 1; justify-content: flex-end;">
+            <button class="nav-button" data-action="showBoosts">
+                <span>Буст</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Подключение скриптов -->
+    <script src="settings.js"></script>
+    <script src="promo-data.js"></script>
+    <script src="promocode.js"></script>
+    <script src="pets.js"></script>
+    <script src="real_estate.js"></script>
+    <script src="movables.js"></script>
+    <script src="upgrades.js"></script>
+    <script src="boosts.js"></script>
+    <script src="game-mini.js"></script>
+    <script src="ui-main.js"></script>
+    <script src="ui-main2.js"></script>
+    <script src="ui-main3.js"></script>
+    <script src="ui-main4.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const isTelegram = window.Telegram && window.Telegram.WebApp;
+            if (isTelegram) {
+                try {
+                    window.Telegram.WebApp.ready();
+                    window.Telegram.WebApp.expand();
+                    const user = window.Telegram.WebApp.initDataUnsafe.user;
+                    window.profile.username = user ? (user.username || user.first_name || 'Аноним') : 'Аноним';
+                    window.showNotification(`Привет, ${window.profile.username}! Добро пожаловать! 😈`);
+                } catch (e) {
+                    console.error('Ошибка при вызове метода Telegram API:', e);
+                    window.profile.username = 'Аноним';
+                    window.showNotification('Привет, Аноним! Добро пожаловать! 😈');
+                }
+            } else {
+                console.warn('Telegram WebApp SDK не загружен. Запуск в режиме без Telegram.');
+                window.profile.username = 'Аноним';
+                window.showNotification('Привет, Аноним! Добро пожаловать! 😈');
+            }
+            loadProfile();
+            updateProfile();
+            applyTheme();
+            window.calculateProfit();
+            document.getElementById('tap-button').addEventListener('click', window.clickTapButton);
+            function bindNavEvents() {
+                document.querySelectorAll('.nav-button').forEach(button => {
+                    button.removeEventListener('click', handleNavClick);
+                    button.addEventListener('click', handleNavClick);
+                });
+            }
+            function handleNavClick(event) {
+                const button = event.target.closest('.nav-button');
+                const action = button.getAttribute('data-action');
+                console.log('Clicked button with action:', action);
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                if (action && window[action]) {
+                    window[action]();
+                } else {
+                    console.error(`Function ${action} is not defined.`);
+                }
+            }
+            bindNavEvents();
+            window.goBack = function() {
+                if (historyStack.length > 1) {
+                    historyStack.pop();
+                    const lastSection = historyStack[historyStack.length - 1];
+                    if (lastSection === 'main') {
+                        showMain();
+                    } else {
+                        eval(lastSection);
+                    }
+                } else {
+                    showMain();
+                }
+            };
+        });
+    </script>
+</body>
+</html>

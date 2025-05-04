@@ -1,203 +1,135 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
 
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Лапуля App</title>
+    <title>Hamster Kombat</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="icon" href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA/4QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREQAAAAAAEAAAEAAAAAEAAAABAAAAEAAAAAAQAAAQAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEAAP+AAAH/gAAB/4AAAf+AAAP/AAAB/4AAA/+AAAP/gAAD/4AAA/+AAAP/wAAD/8AAA//gAAP/4AAA/+AAAP/gAAD/4AA" type="image/x-icon">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Подключение Chart.js -->
 </head>
 <body>
-    <!-- Верхняя панель с кнопками -->
-    <div id="top-bar" class="nav-bar">
-        <button class="action glass-button" data-action="showProfile">Профиль 👤</button>
-        <button class="action glass-button" data-action="showPets">Питомцы 🐾</button>
-        <button class="action glass-button" data-action="showCollections">Коллекции 🧺</button>
-    </div>
-
-    <!-- Левая боковая панель (для планшетов и ПК) -->
-    <div id="side-bar-left" class="nav-bar">
-        <button class="action glass-button" data-action="showInventory">Инвентарь 🎒</button>
-        <button class="action glass-button" data-action="showShop">Магазин 🏪</button>
-        <button class="action glass-button" data-action="showRealEstate">Недвижимость 🏡</button>
-    </div>
-
-    <!-- Правая боковая панель (для планшетов и ПК) -->
-    <div id="side-bar-right" class="nav-bar">
-        <button class="action glass-button" data-action="showGames">Казино 🎲</button>
-        <button class="action glass-button" data-action="showRewards">Награды 🎁</button>
-    </div>
-
-    <!-- Основной контент -->
-    <div id="profile">Загрузка...</div>
-    <div id="banner">
-        <h2>Лапуля App 🐾</h2>
-        <p>Играй, собирай питомцев и побеждай! 🚀</p>
-        <p id="eventInfo"></p>
+    <div id="top-stats">
+        <div id="level-info">
+            <span id="level-display">GOLD 1/27</span>
+            <button id="level-details-btn" class="hk-button" onclick="showLevelDetails()">ℹ️</button>
+            <div id="level-progress"></div>
+            <span id="profit-per-hour">0</span>
+        </div>
+        <button id="settings-button" onclick="showOther()">⚙️</button>
     </div>
     <div id="main-content">
-        <button class="back-button glass-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
-        <h2>Добро пожаловать! 🚀</h2>
-        <p>Выбери раздел, чтобы начать! 😺</p>
+        <button class="back-button hk-button" onclick="goBack()" style="display: none;">Назад ⬅️</button>
+        <div id="tap-container">
+            <div id="tap-button">
+                <span>😈</span>
+                <div id="energy-counter">100/100</div>
+            </div>
+        </div>
     </div>
-
-    <!-- Нижняя панель с кнопками -->
     <div id="bottom-bar" class="nav-bar">
-        <button class="action glass-button" data-action="showTreasureHunt">Поиск 🔍</button>
-        <button class="action glass-button" data-action="showWheel">Колесо 🎡</button>
-        <button class="action glass-button" data-action="showTournaments">Турниры 🏆</button>
-        <button class="action glass-button" data-action="showSeasonPass">Пропуск 🎟️</button>
-        <button class="action glass-button" data-action="showSecrets">Секреты 🔒</button>
-        <!-- Кнопки из боковых панелей для мобильных -->
-        <button class="action glass-button mobile-only" data-action="showInventory">Инвентарь 🎒</button>
-        <button class="action glass-button mobile-only" data-action="showShop">Магазин 🏪</button>
-        <button class="action glass-button mobile-only" data-action="showGames">Казино 🎲</button>
-        <button class="action glass-button mobile-only" data-action="showRewards">Награды 🎁</button>
-        <button class="action glass-button mobile-only" data-action="showRealEstate">Недвижимость 🏡</button>
-        <button class="action glass-button" data-action="showOther">Другое ⚙️</button>
+        <div style="display: flex; flex: 1;">
+            <button class="nav-button active" data-action="showMain">
+                <span>Биржа</span>
+            </button>
+            <button class="nav-button" data-action="showGames">
+                <span>Казино</span>
+            </button>
+            <button class="nav-button" data-action="showQuests">
+                <span>Квесты 📋</span>
+            </button>
+            <button class="nav-button" data-action="showFriends">
+                <span>Друзья</span>
+            </button>
+            <button class="nav-button" data-action="showBonuses">
+                <span>Бонусы 🎁</span>
+            </button>
+            <button class="nav-button" data-action="showShop">
+                <span>Магазин 🏬</span>
+            </button>
+        </div>
+        <div style="display: flex; flex: 1; justify-content: flex-end;">
+            <button class="nav-button" data-action="showBoosts">
+                <span>Буст</span>
+            </button>
+        </div>
     </div>
 
-    <!-- Подключаем скрипты -->
-    <script src="core.js"></script>
-    <script src="ui-main.js"></script>
-    <script src="ui-casino.js"></script>
-    <script src="ui-realestate.js"></script>
-    <script src="game-base.js"></script>
-    <script src="game-mini.js"></script>
-    <script src="game-special.js"></script>
-    <script src="social.js"></script>
-    <script src="pets.js"></script>
-    <script src="events.js"></script>
-    <script src="utils.js"></script>
-    <script src="profile.js"></script>
-    <script src="inventory.js"></script>
+    <!-- Подключение скриптов -->
     <script src="settings.js"></script>
-    <script src="admin.js"></script>
-    <script src="shop.js"></script>
-    <script src="rewards.js"></script>
-    <script src="season.js"></script>
-    <script src="tournaments.js"></script>
-    <script src="secrets.js"></script>
+    <script src="promo-data.js"></script>
+    <script src="promocode.js"></script>
+    <script src="pets.js"></script>
+    <script src="real_estate.js"></script>
+    <script src="movables.js"></script>
+    <script src="upgrades.js"></script>
+    <script src="boosts.js"></script>
+    <script src="game-mini.js"></script>
+    <script src="ui-main.js"></script>
+    <script src="ui-main2.js"></script>
+    <script src="ui-main3.js"></script>
+    <script src="ui-main4.js"></script>
+    <script src="utils.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            window.Telegram.WebApp.ready();
-            window.Telegram.WebApp.expand();
-
-            // Получаем данные пользователя из Telegram
-            const user = window.Telegram.WebApp.initDataUnsafe.user;
-            if (user) {
-                profile.username = user.username || user.first_name || 'Аноним';
-                showNotification(`Привет, ${profile.username}! Добро пожаловать! 😺`);
+            const isTelegram = window.Telegram && window.Telegram.WebApp;
+            if (isTelegram) {
+                try {
+                    window.Telegram.WebApp.ready();
+                    window.Telegram.WebApp.expand();
+                    const user = window.Telegram.WebApp.initDataUnsafe.user;
+                    window.profile.username = user ? (user.username || user.first_name || 'Аноним') : 'Аноним';
+                    window.showNotification(`Привет, ${window.profile.username}! Добро пожаловать! 😈`);
+                } catch (e) {
+                    console.error('Ошибка при вызове метода Telegram API:', e);
+                    window.profile.username = 'Аноним';
+                    window.showNotification('Привет, Аноним! Добро пожаловать! 😈');
+                }
             } else {
-                profile.username = 'Аноним';
-                showNotification('Привет, Аноним! Добро пожаловать! 😺');
+                console.warn('Telegram WebApp SDK не загружен. Запуск в режиме без Telegram.');
+                window.profile.username = 'Аноним';
+                window.showNotification('Привет, Аноним! Добро пожаловать! 😈');
             }
-
-            if (typeof loadProfile === 'function') {
-                loadProfile();
-                updateProfile();
-                applyTheme();
-                calculateOfflineEarnings(); // Проверяем оффлайн-доход
-            } else {
-                console.error('loadProfile is not defined. Check if core.js is loaded correctly.');
-                document.getElementById('profile').innerText = 'Ошибка загрузки профиля.';
-            }
-
-            if (profile && profile.event) {
-                document.getElementById('eventInfo').innerText = `Событие: ${profile.event.description}`;
-            } else {
-                document.getElementById('eventInfo').innerText = '';
-            }
-
-            let bannerClicks = 0;
-            const banner = document.getElementById('banner');
-            if (banner) {
-                banner.addEventListener('click', () => {
-                    bannerClicks++;
-                    if (bannerClicks >= 10) {
-                        profile.coins += 100;
-                        showNotification('Секретная награда! +100 монет 🎉');
-                        checkSecret('banner_clicks'); // Проверяем секрет
-                        bannerClicks = 0;
-                        updateProfile();
-                    }
+            loadProfile();
+            updateProfile();
+            applyTheme();
+            window.calculateProfit();
+            document.getElementById('tap-button').addEventListener('click', window.clickTapButton);
+            function bindNavEvents() {
+                document.querySelectorAll('.nav-button').forEach(button => {
+                    button.removeEventListener('click', handleNavClick);
+                    button.addEventListener('click', handleNavClick);
                 });
             }
-
-            // Привязываем события к кнопкам и наблюдаем за изменениями
-            bindButtonEvents();
-            observeContentChanges();
-
+            function handleNavClick(event) {
+                const button = event.target.closest('.nav-button');
+                const action = button.getAttribute('data-action');
+                console.log('Clicked button with action:', action);
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                if (action && window[action]) {
+                    window[action]();
+                } else {
+                    console.error(`Function ${action} is not defined.`);
+                }
+            }
+            bindNavEvents();
             window.goBack = function() {
                 if (historyStack.length > 1) {
                     historyStack.pop();
                     const lastSection = historyStack[historyStack.length - 1];
                     if (lastSection === 'main') {
                         showMain();
-                    } else if (window[lastSection]) {
-                        window[lastSection]();
+                    } else {
+                        eval(lastSection);
                     }
                 } else {
                     showMain();
                 }
             };
-
-            if (typeof updateEnergy === 'function') {
-                setInterval(updateEnergy, 1000);
-            } else {
-                console.error('updateEnergy is not defined. Check if core.js is loaded correctly.');
-            }
-
-            const mainContent = document.getElementById('main-content');
-            const navBars = document.querySelectorAll('.nav-bar');
-            mainContent.addEventListener('scroll', () => {
-                const scrollTop = mainContent.scrollTop;
-                const opacity = Math.max|b(0, 1 - scrollTop / 100);
-                navBars.forEach(bar => {
-                    bar.style.opacity = opacity;
-                });
-            });
         });
     </script>
 </body>

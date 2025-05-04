@@ -1,4 +1,4 @@
-// game-special.js
+
 function startTreasureHunt() {
     updateEnergy();
     if (profile.energy < 1) {
@@ -9,7 +9,7 @@ function startTreasureHunt() {
     const rewards = [50, 100, 150, 200];
     const reward = rewards[Math.floor(Math.random() * rewards.length)];
     document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Поиск сокровищ 🔍</h2>
         <p>Сокровище найдено! +${reward} монет</p>
     `;
@@ -38,7 +38,7 @@ function spinWheel() {
     const rewards = [10, 50, 100, 0, 200, 500];
     const reward = rewards[Math.floor(Math.random() * rewards.length)];
     document.getElementById('main-content').innerHTML = `
-        <button class="back-button" onclick="goBack()">Назад ⬅️</button>
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
         <h2>Колесо фортуны 🎡</h2>
         <p>Ты выиграл: ${reward} монет!</p>
     `;
@@ -86,4 +86,34 @@ function watchAd() {
     showNotification('Просмотр рекламы...');
 }
 
-// Конец файла game-special.js
+function showBoosts() {
+    document.getElementById('main-content').innerHTML = `
+        <button class="back-button glass-button" onclick="goBack()">Назад ⬅️</button>
+        <h2>Бусты 🚀</h2>
+        <button class="action glass-button" onclick="buyBoost('energy')">Полная энергия (50 монет)</button>
+        <button class="action glass-button" onclick="buyBoost('profit')">Удвоить прибыль (100 монет)</button>
+    `;
+    historyStack.push('showBoosts');
+}
+
+function buyBoost(type) {
+    if (type === 'energy' && profile.coins >= 50) {
+        profile.coins -= 50;
+        profile.energy = profile.maxEnergy;
+        showNotification('Энергия полностью восстановлена! ⚡');
+    } else if (type === 'profit' && profile.coins >= 100) {
+        profile.coins -= 100;
+        const originalProfit = profile.profitPerHour;
+        profile.profitPerHour *= 2;
+        setTimeout(() => {
+            profile.profitPerHour = originalProfit;
+            showNotification('Эффект удвоения прибыли закончился! 📉');
+            updateProfile();
+        }, 300000);
+        showNotification('Прибыль удвоена на 5 минут! 📈');
+    } else {
+        showNotification('Недостаточно монет! 💰');
+    }
+    showBoosts();
+    updateProfile();
+}
